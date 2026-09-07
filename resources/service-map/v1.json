@@ -1,0 +1,6 @@
+{
+  "schema": "kumwe-package-service-map/v1",
+  "package": "kumwe/idempotency",
+  "services": {},
+  "reason": "Values and static semantic helpers are directly constructed. Host adapters implement ports; no injected package runtime service is exported."
+}

@@ -1,0 +1,85 @@
+name: Idempotency CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.5']
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, tokenizer, xmlwriter, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer package downloads
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/composer/files
+          key: composer-files-${{ hashFiles('composer.json') }}
+          restore-keys: composer-files-
+
+      - name: Install the validated package toolchain
+        run: |
+          composer validate --strict
+          composer install --no-interaction --prefer-dist
+          composer audit --abandoned=fail
+
+      - name: Run the complete package gate
+        run: composer check
+
+      - name: Verify the no-dev installed-package autoloader and the shipped example
+        run: |
+          composer install --no-interaction --prefer-dist --no-dev --classmap-authoritative
+          composer autoload:smoke
+          composer examples
+
+  release-tests:
+    name: Release automation tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify release transitions and repository setup
+        run: |
+          bash tools/test-release-record.sh
+          bash tools/test-release-integrity.sh
+          bash tools/test-release-on-record.sh
+          bash tools/test-configure-release-repositories.sh
+          bash tools/test-release-dependencies.sh
+
+
+  package-gate:
+    name: Package gate
+    if: always()
+    needs: [check, release-tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require all package and release tests
+        env:
+          PACKAGE_RESULT: ${{ needs.check.result }}
+          RELEASE_RESULT: ${{ needs.release-tests.result }}
+        run: test "$PACKAGE_RESULT" = success && test "$RELEASE_RESULT" = success

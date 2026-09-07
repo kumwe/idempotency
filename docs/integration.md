@@ -1,0 +1,13 @@
+# Integration and responsibility
+
+Construct values directly. Supply a conforming `CanonicalEncoder` to `IdempotencyRecord::begin()` and `IdempotencyResult`; the host binds its existing canonical execution service. The package provides no ConfigProvider because no injected package runtime service is exported.
+
+Scope each durable key by subject, operation and key. Subject/operation must incorporate the authenticated actor, site and organization identities your operation needs; the package never invents or authorizes that scope. Store the credential/site authorization fingerprint separately in the ledger and re-prove it before replay or completion. Do not include raw secrets in request or response payloads.
+
+Persist `fingerprintProfile()` alongside request and body digests: `kumwe-canonical-json/generic-v1`, with the exact encoder release and corpus digest recorded by deployment evidence. GenericV1 map ordering, list ordering and preserved float fractions determine equality. Changing profiles requires a new fingerprint version and an explicit migration; the Definition no-float profile is not interchangeable. The injected encoder enforces its declared payload limits and refusal mapping.
+
+Record transitions return new values. Completion and failure are terminal. Replay refuses a mismatched request, expiry at the exact expiry instant, an in-progress operation or a failed operation. `createdAt()` and `expiresAt()` retain their immutable instants. Captured response bodies detach references by round-tripping the encoder's canonical bytes; their key order is canonical, and `bodyDigest()` hashes exactly those bytes. HTTP status bounds are 100–599. Persist arrays/JSON and scalars through the host adapter, never a serialized encoder object. The ledger's `find()` projection is adapter data with documented comparison columns, not a portable object serializer.
+
+Implement `IdempotencyLedger`, `SecretOnceIdempotencyLedger` and `IdempotencyPurger` as host adapters. Unique first-writer claims, ownership-conditioned writes, lease clocks, secret-free replay bodies, transaction rollback and bounded deletion are host guarantees. An expired lease does not prove an external side effect failed; reconcile ambiguous effects before takeover. Failed/expired release and retry policy remains a use-case decision.
+
+Run `composer examples` for a complete single-process ledger implementation, claim collision and stable replay. Its fixed canonical fixture only accepts its two example values. This demonstrates interface composition, not durable concurrency. App must retain its race, rollback, worker termination, database and adapter-parity tests.
