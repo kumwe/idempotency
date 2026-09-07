@@ -36,7 +36,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Read the release record
+        id: record
+        run: |
+          version="$(bash tools/read-release-record.sh < CHANGELOG.md)"
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+
       - name: Set up PHP for dependency verification
+        if: steps.record.outputs.version != ''
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: '8.5'
@@ -44,11 +51,13 @@ jobs:
           coverage: none
           tools: composer:v2
       - name: Resolve production dependencies from the registry
+        if: steps.record.outputs.version != ''
         run: composer install --no-dev --prefer-dist --no-interaction --no-progress --classmap-authoritative
-      - name: Verify the actual upstream releases and external attestations
+      - name: Verify published dependency tag, source and dist identity
+        if: steps.record.outputs.version != ''
         env:
           GH_TOKEN: ${{ github.token }}
-        run: bash tools/check-release-dependencies.sh . "$RUNNER_TEMP/dependency-verification.json"
+        run: bash tools/check-package-dependencies.sh . "$RUNNER_TEMP/dependency-verification.json"
 
       - name: Publish or verify the recorded release
         env:
