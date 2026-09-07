@@ -1,0 +1,16 @@
+{
+  "schema": "kumwe-package-capabilities/v1",
+  "package": "kumwe/idempotency",
+  "namespace": "Kumwe\\Idempotency",
+  "capabilities": [
+    "Immutable replay identities, request fingerprints, captured results, state transitions and durable ledger ports."
+  ],
+  "host_owned": [
+    "authorization",
+    "persistence",
+    "transactions",
+    "retention",
+    "external effects"
+  ],
+  "canonical_profile": "kumwe-canonical-json/generic-v1"
+}

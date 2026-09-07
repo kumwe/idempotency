@@ -1,0 +1,990 @@
+{
+    "schema": "kumwe-package-public-api/v1",
+    "package": "kumwe/idempotency",
+    "release": "0.1.0",
+    "namespace": "Kumwe\\Idempotency\\",
+    "symbols": {
+        "Kumwe\\Idempotency\\IdempotencyKey": {
+            "kind": "class",
+            "stability": "stable",
+            "file": "src/IdempotencyKey.php",
+            "abstract": false,
+            "final": true,
+            "readonly": true,
+            "parent": null,
+            "interfaces": [
+                "Stringable"
+            ],
+            "constants": {},
+            "properties": {},
+            "methods": {
+                "__toString": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "string"
+                },
+                "equals": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "other",
+                            "type": "Kumwe\\Idempotency\\IdempotencyKey",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "fromHeader": {
+                    "visibility": "public",
+                    "static": true,
+                    "parameters": [
+                        {
+                            "name": "value",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "Kumwe\\Idempotency\\IdempotencyKey"
+                },
+                "fromString": {
+                    "visibility": "public",
+                    "static": true,
+                    "parameters": [
+                        {
+                            "name": "value",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "Kumwe\\Idempotency\\IdempotencyKey"
+                },
+                "value": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "string"
+                }
+            },
+            "deprecated": null
+        },
+        "Kumwe\\Idempotency\\IdempotencyLedger": {
+            "kind": "interface",
+            "stability": "stable",
+            "file": "src/IdempotencyLedger.php",
+            "abstract": false,
+            "final": false,
+            "readonly": false,
+            "parent": null,
+            "interfaces": [],
+            "constants": {},
+            "properties": {},
+            "methods": {
+                "complete": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "status",
+                            "type": "int",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "body",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "headers",
+                            "type": "array",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "find": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "?array"
+                },
+                "release": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "reserve": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "requestDigest",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "authorizationFingerprint",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "takeOverExpired": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "requestDigest",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "authorizationFingerprint",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "takeOverFailed": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "requestDigest",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "authorizationFingerprint",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "takeOverStale": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "authorizationFingerprint",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                }
+            },
+            "deprecated": null
+        },
+        "Kumwe\\Idempotency\\IdempotencyPurger": {
+            "kind": "interface",
+            "stability": "stable",
+            "file": "src/IdempotencyPurger.php",
+            "abstract": false,
+            "final": false,
+            "readonly": false,
+            "parent": null,
+            "interfaces": [],
+            "constants": {},
+            "properties": {},
+            "methods": {
+                "purgeExpired": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "batchSize",
+                            "type": "int",
+                            "optional": true,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "int"
+                }
+            },
+            "deprecated": null
+        },
+        "Kumwe\\Idempotency\\IdempotencyRecord": {
+            "kind": "class",
+            "stability": "stable",
+            "file": "src/IdempotencyRecord.php",
+            "abstract": false,
+            "final": true,
+            "readonly": true,
+            "parent": null,
+            "interfaces": [],
+            "constants": {},
+            "properties": {},
+            "methods": {
+                "assertRequestMatches": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "request",
+                            "type": "mixed",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "void"
+                },
+                "begin": {
+                    "visibility": "public",
+                    "static": true,
+                    "parameters": [
+                        {
+                            "name": "key",
+                            "type": "Kumwe\\Idempotency\\IdempotencyKey",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "request",
+                            "type": "mixed",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "createdAt",
+                            "type": "DateTimeImmutable",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "expiresAt",
+                            "type": "DateTimeImmutable",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "encoder",
+                            "type": "Kumwe\\CanonicalJson\\CanonicalEncoder",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "Kumwe\\Idempotency\\IdempotencyRecord"
+                },
+                "complete": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "result",
+                            "type": "Kumwe\\Idempotency\\IdempotencyResult",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "Kumwe\\Idempotency\\IdempotencyRecord"
+                },
+                "createdAt": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "DateTimeImmutable"
+                },
+                "expiresAt": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "DateTimeImmutable"
+                },
+                "fail": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "Kumwe\\Idempotency\\IdempotencyRecord"
+                },
+                "fingerprintProfile": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "string"
+                },
+                "isExpiredAt": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "time",
+                            "type": "DateTimeImmutable",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "key": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "Kumwe\\Idempotency\\IdempotencyKey"
+                },
+                "operation": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "string"
+                },
+                "replay": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "request",
+                            "type": "mixed",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "time",
+                            "type": "DateTimeImmutable",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "Kumwe\\Idempotency\\IdempotencyResult"
+                },
+                "requestDigest": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "string"
+                },
+                "state": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "Kumwe\\Idempotency\\IdempotencyState"
+                },
+                "subject": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "string"
+                }
+            },
+            "deprecated": null
+        },
+        "Kumwe\\Idempotency\\IdempotencyResult": {
+            "kind": "class",
+            "stability": "stable",
+            "file": "src/IdempotencyResult.php",
+            "abstract": false,
+            "final": true,
+            "readonly": true,
+            "parent": null,
+            "interfaces": [],
+            "constants": {},
+            "properties": {},
+            "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "statusCode",
+                            "type": "int",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "body",
+                            "type": "array",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "encoder",
+                            "type": "Kumwe\\CanonicalJson\\CanonicalEncoder",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": null
+                },
+                "body": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "array"
+                },
+                "bodyDigest": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "string"
+                },
+                "fingerprintProfile": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "string"
+                },
+                "statusCode": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [],
+                    "return": "int"
+                }
+            },
+            "deprecated": null
+        },
+        "Kumwe\\Idempotency\\IdempotencyState": {
+            "kind": "enum",
+            "stability": "stable",
+            "file": "src/IdempotencyState.php",
+            "abstract": false,
+            "final": true,
+            "readonly": false,
+            "parent": null,
+            "interfaces": [],
+            "constants": {
+                "COMPLETED": {
+                    "type": "string"
+                },
+                "FAILED": {
+                    "type": "string"
+                },
+                "IN_PROGRESS": {
+                    "type": "string"
+                }
+            },
+            "properties": {},
+            "methods": {},
+            "deprecated": null
+        },
+        "Kumwe\\Idempotency\\SecretOnceIdempotencyLedger": {
+            "kind": "interface",
+            "stability": "stable",
+            "file": "src/SecretOnceIdempotencyLedger.php",
+            "abstract": false,
+            "final": false,
+            "readonly": false,
+            "parent": null,
+            "interfaces": [],
+            "constants": {},
+            "properties": {},
+            "methods": {
+                "complete": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "authorizationFingerprint",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "status",
+                            "type": "int",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "body",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "headers",
+                            "type": "array",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "confirmLease": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "authorizationFingerprint",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "find": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "?array"
+                },
+                "release": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "void"
+                },
+                "reserve": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "requestDigest",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "authorizationFingerprint",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                },
+                "rewriteStoredResult": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "body",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "void"
+                },
+                "takeOver": {
+                    "visibility": "public",
+                    "static": false,
+                    "parameters": [
+                        {
+                            "name": "subject",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "operation",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "requestDigest",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "authorizationFingerprint",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        },
+                        {
+                            "name": "ownerToken",
+                            "type": "string",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "bool"
+                }
+            },
+            "deprecated": null
+        }
+    },
+    "extension_points": [
+        "Kumwe\\Idempotency\\IdempotencyLedger",
+        "Kumwe\\Idempotency\\IdempotencyPurger",
+        "Kumwe\\Idempotency\\SecretOnceIdempotencyLedger"
+    ],
+    "digest_of": "src"
+}
