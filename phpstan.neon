@@ -1,0 +1,7 @@
+parameters:
+  level: max
+  paths:
+    - src
+  tmpDir: .phpstan.cache
+  treatPhpDocTypesAsCertain: false
+  checkUninitializedProperties: true

@@ -19,7 +19,7 @@ namespace Kumwe\Idempotency;
  * constraint rather than by a read that another request could interleave with. Every conditional write
  * answers with a truthful boolean: true only when this caller's claim landed on exactly one record.
  *
- * @since  2.0.0
+ * @since  0.1.0
  */
 interface IdempotencyLedger
 {
@@ -39,7 +39,7 @@ interface IdempotencyLedger
      * @return  bool  True when the reservation is now this request's; false when a record for this
      *          subject, operation and key already existed.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function reserve(
         string $subject,
@@ -61,7 +61,7 @@ interface IdempotencyLedger
      *          lock instant, result columns and expiry, each exactly as stored — or null when the record
      *          vanished between the collision and this read.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function find(string $subject, string $operation, string $key): ?array;
 
@@ -78,7 +78,7 @@ interface IdempotencyLedger
      *
      * @return  bool  True when this request now owns the record; false when it was revived concurrently.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function takeOverExpired(
         string $id,
@@ -97,7 +97,7 @@ interface IdempotencyLedger
      *
      * @return  bool  True when this request now owns the record; false when another retry claimed it first.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function takeOverFailed(
         string $id,
@@ -119,7 +119,7 @@ interface IdempotencyLedger
      * @return  bool  True when this request now owns the record; false when the lease was still held or
      *          another attempt claimed it first.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function takeOverStale(string $id, string $authorizationFingerprint, string $ownerToken): bool;
 
@@ -140,7 +140,7 @@ interface IdempotencyLedger
      *
      * @return  bool  True when exactly the one record this request owns was settled.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function complete(
         string $subject,
@@ -166,7 +166,7 @@ interface IdempotencyLedger
      * @return  bool  True when exactly this request's record was deleted; false when it was no longer
      *          this request's to clear.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function release(string $subject, string $operation, string $key, string $ownerToken): bool;
 }

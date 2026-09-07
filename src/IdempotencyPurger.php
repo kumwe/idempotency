@@ -14,7 +14,7 @@ namespace Kumwe\Idempotency;
  * in flight. The scheduled `PurgeIdempotencyRecordsHandler` drives the loop, and stops as soon as a
  * call returns a short batch.
  *
- * @since  2.0.0
+ * @since  0.1.0
  */
 interface IdempotencyPurger
 {
@@ -28,7 +28,7 @@ interface IdempotencyPurger
      *
      * @return  int  Number of records actually deleted, which is zero when nothing has expired.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function purgeExpired(int $batchSize = 1_000): int;
 }

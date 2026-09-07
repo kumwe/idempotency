@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Kumwe\Idempotency;
 
 use InvalidArgumentException;
+use JsonException;
+use Kumwe\CanonicalJson\Profile;
 use Kumwe\CanonicalJson\CanonicalEncoder;
 
 /**
@@ -16,7 +18,7 @@ use Kumwe\CanonicalJson\CanonicalEncoder;
  * canonical encoding, so a store that writes the body out and reads it back later can prove the payload
  * it recovered is still the response that was captured rather than replay something altered in transit.
  *
- * @since  2.0.0
+ * @since  0.1.0
  */
 final readonly class IdempotencyResult
 {
@@ -24,14 +26,14 @@ final readonly class IdempotencyResult
      * Decoded response payload handed back on replay.
      *
      * @var    array<string, mixed>
-     * @since  2.0.0
+     * @since  0.1.0
      */
     private array $body;
     /**
      * Fingerprint of the body, taken once at construction and never recomputed.
      *
      * @var    string
-     * @since  2.0.0
+     * @since  0.1.0
      */
     private string $bodyDigest;
 
@@ -46,7 +48,7 @@ final readonly class IdempotencyResult
      * @throws  InvalidArgumentException  When the status falls outside the 100 to 599 range, or the body holds
      *          a value canonical JSON cannot represent.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function __construct(private int $statusCode, array $body, CanonicalEncoder $encoder)
     {
@@ -54,8 +56,24 @@ final readonly class IdempotencyResult
             throw new InvalidArgumentException('An idempotent result requires a valid HTTP status code.');
         }
 
-        $this->body = $body;
-        $this->bodyDigest = $encoder->digest($body);
+        $bytes = $encoder->encode($body);
+        try {
+            $snapshot = json_decode($bytes, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $error) {
+            throw new InvalidArgumentException('The canonical encoder returned invalid JSON.', 0, $error);
+        }
+        if (!is_array($snapshot)) {
+            throw new InvalidArgumentException('An idempotent result body must remain an array.');
+        }
+        /** @var array<string, mixed> $snapshot */
+        $this->body = $snapshot;
+        $this->bodyDigest = hash('sha256', $bytes);
+    }
+
+    /** Canonical profile bound to every stored response digest. @since 0.1.0 */
+    public function fingerprintProfile(): string
+    {
+        return Profile::GenericV1->value;
     }
 
     /**
@@ -63,7 +81,7 @@ final readonly class IdempotencyResult
      *
      * @return  int  HTTP status code, between 100 and 599 inclusive.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function statusCode(): int
     {
@@ -76,7 +94,7 @@ final readonly class IdempotencyResult
      * @return  array<string, mixed>  The payload exactly as captured; `bodyDigest()` fingerprints this
      *          same value, so a store can re-derive the digest and check what it persisted.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function body(): array
     {
@@ -88,7 +106,7 @@ final readonly class IdempotencyResult
      *
      * @return  string  Lowercase hexadecimal SHA-256 of the body's canonical encoding, 64 characters wide.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function bodyDigest(): string
     {

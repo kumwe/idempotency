@@ -14,7 +14,7 @@ namespace Kumwe\Idempotency;
  * rewrite hook that strips a legacy stored secret on its first replay. Application owns the contract;
  * `DoctrineSecretOnceIdempotencyLedger` adapts it, and no signature here names a driver type.
  *
- * @since  2.0.0
+ * @since  0.1.0
  */
 interface SecretOnceIdempotencyLedger
 {
@@ -34,7 +34,7 @@ interface SecretOnceIdempotencyLedger
      * @return  bool  True when the reservation is now this request's; false when a record for this
      *          subject, operation and key already existed.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function reserve(
         string $subject,
@@ -59,7 +59,7 @@ interface SecretOnceIdempotencyLedger
      *          columns and expiry instants, each exactly as stored — or null when the record vanished
      *          between the collision and this read.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function find(string $subject, string $operation, string $key): ?array;
 
@@ -79,7 +79,7 @@ interface SecretOnceIdempotencyLedger
      *
      * @return  bool  True when this request now owns the record; false when it is still someone else's.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function takeOver(
         string $subject,
@@ -106,7 +106,7 @@ interface SecretOnceIdempotencyLedger
      * @return  bool  True when the record is present, in progress, this request's, fingerprint-matched
      *          and unlapsed; false on any other state.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function confirmLease(
         string $subject,
@@ -134,7 +134,7 @@ interface SecretOnceIdempotencyLedger
      *
      * @return  bool  True when exactly the one record this request owns was settled.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function complete(
         string $subject,
@@ -161,7 +161,7 @@ interface SecretOnceIdempotencyLedger
      *
      * @return  void
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function rewriteStoredResult(string $subject, string $operation, string $key, string $body): void;
 
@@ -179,7 +179,7 @@ interface SecretOnceIdempotencyLedger
      *
      * @return  void
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function release(string $subject, string $operation, string $key, string $ownerToken): void;
 }
