@@ -1,0 +1,62 @@
+{
+    "name": "kumwe/idempotency",
+    "description": "Portable idempotency keys, immutable replay state and ledger ports.",
+    "type": "library",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/kumwe/idempotency",
+    "require": {
+        "php": "^8.5",
+        "ext-json": "*",
+        "kumwe/canonical-json": "dev-agent/canonical-encoder-port-v2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.5",
+        "phpstan/phpstan": "^2.1",
+        "squizlabs/php_codesniffer": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kumwe\\Idempotency\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kumwe\\Idempotency\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "composer:validate": "composer validate --strict",
+        "lint": "php tools/lint.php",
+        "cs": "phpcs -q",
+        "cs:fix": "phpcbf",
+        "analyse": "phpstan analyse --no-progress --memory-limit=1G",
+        "test": "phpunit",
+        "api": "php tools/verify-public-api.php",
+        "api:record": "php tools/verify-public-api.php --write",
+        "architecture": "php tools/verify-architecture.php",
+        "clean-consumer": "php tools/verify-clean-consumer.php",
+        "security": "composer audit --abandoned=fail",
+        "check": [
+            "@composer:validate",
+            "@lint",
+            "@cs",
+            "@analyse",
+            "@test",
+            "@api",
+            "@architecture",
+            "@security",
+            "@clean-consumer"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/kumwe/canonical-json.git"
+        }
+    ]
+}
