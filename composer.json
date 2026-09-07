@@ -46,7 +46,9 @@
             "@architecture",
             "@security",
             "@clean-consumer"
-        ]
+        ],
+        "autoload:smoke": "php resources/toolchain/autoload-smoke.php",
+        "examples": "php examples/typed-consumer.php"
     },
     "config": {
         "sort-packages": true

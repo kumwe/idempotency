@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use DomainException;
 use InvalidArgumentException;
 use Kumwe\CanonicalJson\CanonicalEncoder;
-use Kumwe\Idempotency\IdempotencyKey;
+use Kumwe\CanonicalJson\Profile;
 
 /**
  * One entry in the idempotency ledger: the request that claimed a key, and the answer it may replay.
@@ -25,7 +25,7 @@ use Kumwe\Idempotency\IdempotencyKey;
  * operation travel with the key because a key means nothing on its own — a store scopes it to one
  * caller and one operation before looking it up.
  *
- * @since  2.0.0
+ * @since  0.1.0
  */
 final readonly class IdempotencyRecord
 {
@@ -48,7 +48,7 @@ final readonly class IdempotencyRecord
      *          not a lowercase SHA-256, the expiry is not after the creation instant, or a result is present
      *          without the COMPLETED state or missing with it.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     private function __construct(
         private IdempotencyKey $key,
@@ -97,7 +97,7 @@ final readonly class IdempotencyRecord
      * @throws  InvalidArgumentException  When the subject or operation is empty once trimmed, the expiry is
      *          not after the creation instant, or the request holds a value canonical JSON cannot represent.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public static function begin(
         IdempotencyKey $key,
@@ -121,12 +121,24 @@ final readonly class IdempotencyRecord
         );
     }
 
+    /** Canonical profile bound to the request digest; persist beside requestDigest(). @since 0.1.0 */
+    public function fingerprintProfile(): string
+    {
+        return Profile::GenericV1->value;
+    }
+
+    /** Creation time retained across immutable transitions. @since 0.1.0 */
+    public function createdAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
     /**
      * Return the token this entry is filed under.
      *
      * @return  IdempotencyKey  The already-validated key the claim was opened with.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function key(): IdempotencyKey
     {
@@ -138,7 +150,7 @@ final readonly class IdempotencyRecord
      *
      * @return  string  Subject identifier; one half of the scope a key is only unique within.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function subject(): string
     {
@@ -150,7 +162,7 @@ final readonly class IdempotencyRecord
      *
      * @return  string  Operation name; the other half of the scope a key is only unique within.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function operation(): string
     {
@@ -164,7 +176,7 @@ final readonly class IdempotencyRecord
      *
      * @return  string  Lowercase hexadecimal SHA-256, 64 characters wide.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function requestDigest(): string
     {
@@ -176,7 +188,7 @@ final readonly class IdempotencyRecord
      *
      * @return  IdempotencyState  COMPLETED is the only stage from which a result can be replayed.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function state(): IdempotencyState
     {
@@ -188,7 +200,7 @@ final readonly class IdempotencyRecord
      *
      * @return  DateTimeImmutable  Always strictly later than the instant the claim was opened.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function expiresAt(): DateTimeImmutable
     {
@@ -205,7 +217,7 @@ final readonly class IdempotencyRecord
      *
      * @return  bool  True when the entry can no longer be replayed.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function isExpiredAt(DateTimeImmutable $time): bool
     {
@@ -227,7 +239,7 @@ final readonly class IdempotencyRecord
      *          request than the one it was claimed for.
      * @throws  InvalidArgumentException  When the request holds a value canonical JSON cannot represent.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function assertRequestMatches(mixed $request): void
     {
@@ -245,7 +257,7 @@ final readonly class IdempotencyRecord
      *
      * @throws  DomainException  When the claim is not open, because it has already completed or failed.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function complete(IdempotencyResult $result): self
     {
@@ -276,7 +288,7 @@ final readonly class IdempotencyRecord
      *
      * @throws  DomainException  When the claim is not open, because it has already completed or failed.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function fail(): self
     {
@@ -315,7 +327,7 @@ final readonly class IdempotencyRecord
      *          operation is still in progress, or it ended without a result.
      * @throws  InvalidArgumentException  When the request holds a value canonical JSON cannot represent.
      *
-     * @since   2.0.0
+     * @since   0.1.0
      */
     public function replay(mixed $request, DateTimeImmutable $time): IdempotencyResult
     {

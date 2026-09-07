@@ -17,7 +17,7 @@ namespace Kumwe\Idempotency;
  * `BusinessRecord\Domain\BusinessRecordIdempotencyState` models the same three stages for the
  * business-record command ledger; the two are separate types because the ledgers are separate.
  *
- * @since  2.0.0
+ * @since  0.1.0
  */
 enum IdempotencyState: string
 {
@@ -27,19 +27,19 @@ enum IdempotencyState: string
      * There is no result to hand back, so a repeat of the request is refused outright rather than made
      * to wait for the first attempt to finish.
      *
-     * @since  2.0.0
+     * @since  0.1.0
      */
     case IN_PROGRESS = 'in_progress';
     /**
      * The operation finished and its response is stored, so a repeat is answered from the entry.
      *
-     * @since  2.0.0
+     * @since  0.1.0
      */
     case COMPLETED = 'completed';
     /**
      * The operation ended without a usable response, leaving the entry with nothing to replay.
      *
-     * @since  2.0.0
+     * @since  0.1.0
      */
     case FAILED = 'failed';
 }

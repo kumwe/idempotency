@@ -7,10 +7,10 @@ namespace Kumwe\Idempotency;
 use InvalidArgumentException;
 use Stringable;
 
-/** Validated caller-supplied identity of one replay-protected operation. @since 0.2.0 */
+/** Validated caller-supplied identity of one replay-protected operation. @since 0.1.0 */
 final readonly class IdempotencyKey implements Stringable
 {
-    /** @param string $key Already-validated transport-safe replay identity being frozen. @since 0.2.0 */
+    /** @param string $key Already-validated transport-safe replay identity being frozen. @since 0.1.0 */
     private function __construct(private string $key)
     {
     }
@@ -20,7 +20,7 @@ final readonly class IdempotencyKey implements Stringable
      *
      * @throws  InvalidArgumentException  When the value is not 8 to 128 transport-safe ASCII characters.
      *
-     * @since   0.2.0
+     * @since   0.1.0
      */
     public static function fromString(string $value): self
     {
@@ -45,19 +45,19 @@ final readonly class IdempotencyKey implements Stringable
     {
         return self::fromString(trim($value));
     }
-    /** @return string 8 to 128 transport-safe ASCII characters. @since 0.2.0 */
+    /** @return string 8 to 128 transport-safe ASCII characters. @since 0.1.0 */
     public function value(): string
     {
         return $this->key;
     }
 
-    /** Compare replay identities in constant time. @param self $other Key claimed by another request. @since 0.2.0 */
+    /** Compare replay identities in constant time. @param self $other Key claimed by another request. @since 0.1.0 */
     public function equals(self $other): bool
     {
         return hash_equals($this->key, $other->key);
     }
 
-    /** @since 0.2.0 */
+    /** @since 0.1.0 */
     public function __toString(): string
     {
         return $this->key;
