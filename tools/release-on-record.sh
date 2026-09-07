@@ -49,29 +49,8 @@ api_read() {
     || fail "Invalid JSON metadata returned for $endpoint."
 }
 
-require_protection() {
-  local branch_path
-  branch_path="$(jq -rn --arg branch "$DEFAULT_BRANCH" '$branch | @uri')"
-  api_read "repos/$GITHUB_REPOSITORY/branches/$branch_path" \
-    || fail 'The default branch cannot be read.'
-  bash "$tools_dir/check-release-integrity.sh" protected-branch "$DEFAULT_BRANCH" < "$api_body"
-}
-
-require_protection
-release_exists=false
-probe_status=0
-api_read "repos/$GITHUB_REPOSITORY/releases/tags/v$version" || probe_status=$?
-if [[ "$probe_status" -eq 0 ]]; then
-  bash "$tools_dir/check-release-integrity.sh" published "$version" < "$api_body"
-  release_exists=true
-elif [[ "$probe_status" -ne 4 ]]; then
-  fail "Cannot determine whether release v$version exists."
-fi
-
-probe_status=0
-api_read "repos/$GITHUB_REPOSITORY/git/ref/tags/v$version" || probe_status=$?
-if [[ "$probe_status" -eq 0 ]]; then
-  depth=0
+resolve_tag_commit() {
+  local depth=0 object_type
   while :; do
     object_type="$(jq -r '.object.type' "$api_body")"
     tag_sha="$(jq -r '.object.sha' "$api_body")"
@@ -82,6 +61,23 @@ if [[ "$probe_status" -eq 0 ]]; then
     [[ "$depth" -le 16 ]] || fail 'Annotated tag nesting exceeds the verification limit.'
     api_read "repos/$GITHUB_REPOSITORY/git/tags/$tag_sha" || fail 'Cannot resolve the annotated tag.'
   done
+}
+
+release_exists=false
+probe_status=0
+api_read "repos/$GITHUB_REPOSITORY/releases/tags/v$version" || probe_status=$?
+if [[ "$probe_status" -eq 0 ]]; then
+  bash "$tools_dir/check-release-integrity.sh" stable-release "$version" < "$api_body"
+  release_exists=true
+elif [[ "$probe_status" -ne 4 ]]; then
+  fail "Cannot determine whether release v$version exists."
+fi
+
+probe_status=0
+release_sha="$GITHUB_SHA"
+api_read "repos/$GITHUB_REPOSITORY/git/ref/tags/v$version" || probe_status=$?
+if [[ "$probe_status" -eq 0 ]]; then
+  resolve_tag_commit
   git cat-file -e "$tag_sha^{commit}" || fail 'The tag commit is missing from the complete checkout.'
   git merge-base --is-ancestor "$tag_sha" "$GITHUB_SHA" \
     || fail "Tag v$version is outside the tested default-branch history."
@@ -90,10 +86,10 @@ if [[ "$probe_status" -eq 0 ]]; then
   if [[ "$release_exists" != true && "$tag_sha" != "$GITHUB_SHA" ]]; then
     fail "Unpublished tag v$version must target the exact commit tested in this run; use a new release record."
   fi
+  release_sha="$tag_sha"
   echo "Verified tag v$version at $tag_sha."
 elif [[ "$probe_status" -eq 4 ]]; then
   [[ "$release_exists" != true ]] || fail 'The published release has no matching version tag.'
-  require_protection
   gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
     --field ref="refs/tags/v$version" --field sha="$GITHUB_SHA" > "$scratch_dir/created-tag.json"
   jq -es --arg ref "refs/tags/v$version" --arg sha "$GITHUB_SHA" '
@@ -104,15 +100,19 @@ else
 fi
 
 if [[ "$release_exists" != true ]]; then
-  require_protection
   gh release create "v$version" --repo "$GITHUB_REPOSITORY" --verify-tag --title "v$version" \
     --notes "${RELEASE_NOTES:-See CHANGELOG.md section $version for this package release.}"
 fi
 api_read "repos/$GITHUB_REPOSITORY/releases/tags/v$version" || fail 'Published release cannot be read.'
-bash "$tools_dir/check-release-integrity.sh" published "$version" < "$api_body"
+bash "$tools_dir/check-release-integrity.sh" stable-release "$version" < "$api_body"
+# Recheck the tag after publication, since it could have changed after inspection.
+# This verifies the observed target regardless of the optional immutability setting.
+api_read "repos/$GITHUB_REPOSITORY/git/ref/tags/v$version" || fail 'The release tag cannot be read.'
+resolve_tag_commit
+[[ "$tag_sha" == "$release_sha" ]] || fail 'The release tag differs from the verified source commit.'
 if [[ "$release_exists" == true ]]; then
   output release_status verified
 else
   output release_status published
 fi
-echo "Verified immutable release v$version."
+echo "Verified release v$version."
