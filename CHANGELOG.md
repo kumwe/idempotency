@@ -19,4 +19,4 @@
 - Require the explicit generic-v1 CanonicalEncoder port; no encoder fallback.
 - Add package behavior and hostile-input tests, API drift checks and archive consumer verification.
 
-Version 0.1.0 was published from 26ec2ac31c493a088dd2bd01983b7428692bd1ea. The 0.1.1 record is a review candidate; publication and independent artifact verification remain separate steps.
+Version 0.1.0 was published from 26ec2ac31c493a088dd2bd01983b7428692bd1ea. Version 0.1.1 was published from f3e8e213ec00b56b4b1d1acbd8d82388ce85f8e1. The 0.1.2 heading is a proposed corrective successor; immutable publication and independent verification remain separate steps.
