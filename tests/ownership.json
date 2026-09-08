@@ -1,0 +1,55 @@
+{
+  "schema": "kumwe-test-ownership/v1",
+  "package": "kumwe/idempotency",
+  "source": {
+    "src/IdempotencyKey.php": [
+      "tests/IdempotencyTest.php"
+    ],
+    "src/IdempotencyLedger.php": [
+      "tests/LedgerConformanceTest.php"
+    ],
+    "src/IdempotencyPurger.php": [
+      "tests/LedgerConformanceTest.php"
+    ],
+    "src/IdempotencyRecord.php": [
+      "tests/IdempotencyTest.php"
+    ],
+    "src/IdempotencyResult.php": [
+      "tests/IdempotencyTest.php"
+    ],
+    "src/IdempotencyState.php": [
+      "tests/IdempotencyTest.php"
+    ],
+    "src/SecretOnceIdempotencyLedger.php": [
+      "tests/LedgerConformanceTest.php"
+    ]
+  },
+  "tests": {
+    "tests/Conformance/LedgerContract.php": {
+      "role": "contract",
+      "responsibility": "Reusable sequential public-port conformance assertions."
+    },
+    "tests/Fixture/LedgerStore.php": {
+      "role": "fixture",
+      "responsibility": "Deterministic in-memory test adapter; no durable or host guarantee."
+    },
+    "tests/Fixture/SecretOnceLedger.php": {
+      "role": "fixture",
+      "responsibility": "Deterministic in-memory test adapter; no durable or host guarantee."
+    },
+    "tests/IdempotencyTest.php": {
+      "role": "test",
+      "responsibility": "Portable model behavior, invariants, boundary refusals and inherited error vocabulary."
+    },
+    "tests/LedgerConformanceTest.php": {
+      "role": "test",
+      "responsibility": "Execute the reusable port contract against test-only adapters."
+    }
+  },
+  "host_retained": [
+    "database locking and concurrent writers",
+    "authorization and trust",
+    "transactions, rollback and recovery",
+    "App composition and adapter parity"
+  ]
+}
