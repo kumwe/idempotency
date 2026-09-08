@@ -10,11 +10,14 @@ immutable-release setting and independent attestations are not normal publicatio
 prerequisites. Independent verification remains separately available through
 `tools/check-release-dependencies.sh`.
 
-The current source candidate requires `CanonicalEncoder` from Canonical JSON
-PR #7. That interface is not in the published `v0.1.0` dependency. Keep the source
-candidate until the upstream port has a stable release, then select and verify
-that exact version before publishing Idempotency. Passing source CI alone does
-not establish this package's publication readiness.
+The runtime requirement is published `kumwe/canonical-json` 0.1.1, including the
+`CanonicalEncoder` port. Its tag identifies e7006a2580a49a1c8ab507b0d7b9c3403b4f9f58.
+`resources/release-readiness.json` records that exact coordinate with a null external
+attestation until independently provided; `composer dependency-readiness` rejects
+stale or floating coordinates. An optional stricter attestation check is available
+through `tools/check-release-dependencies.sh`; it is not an assertion that independent
+verification has already passed. Passing source CI is distinct from verification of
+the published Idempotency successor.
 
 An Unreleased-only changelog skips publication-specific dependency checks after
 the full package gate passes. Existing tags and releases are never replaced.

@@ -23,19 +23,18 @@ source:
     capability_index_sha256: null
   semantic_inputs:
   - owner: kumwe/canonical-json
-    version_or_commit: 495afb4b0f7a7fd33f6b35965b6504452cae5e8c
-    manifest_or_corpus: kumwe-canonical-json/generic-v1
-    sha256: null
+    version_or_commit: v0.1.1
+    manifest_or_corpus: resources/corpus/v1.json
+    sha256: 84d21b12e7a2bfd752356d9a6e664bcb332e209d19017e7634e7485a4fa4e250
   examined_dependencies:
   - kumwe/canonical-json
-  active_related_pull_requests:
-  - https://github.com/kumwe/canonical-json/pull/7
+  active_related_pull_requests: []
 target:
   repository: https://github.com/kumwe/idempotency
   artifact_identity: kumwe/idempotency
   canonical_namespace_or_abi: Kumwe\Idempotency
-  branch: agent/extract-idempotency-v2
-  pull_request: https://github.com/kumwe/idempotency/pull/1
+  branch: "agent/complete-ledger-conformance"
+  pull_request: "https://github.com/kumwe/idempotency/pull/4"
 ownership:
   responsibility: Immutable replay identities, request fingerprints, captured results,
     state transitions and durable ledger ports.
@@ -55,7 +54,7 @@ ownership:
   - path: resources/service-map/v1.json
     sha256: e1a4a14ad2688ecbfcd4e0059d16d460e2ef6becad3d67e945f10b61529d426e
   - path: resources/public-api/v1.json
-    sha256: 82ae2710a0353c89954f331766336fc641355385ec3599bbbf198cb4c9a0bb5b
+    sha256: aec7adf3a40cc48ba4417f4ee29dbe89a5f1ba63206ab45e3d27a202fdfb5130
   intentionally_excluded:
   - App infrastructure, middleware, operational scheduling and consumer integration
     tests
@@ -233,7 +232,11 @@ native_cpp: null
 php_extension: null
 tests:
   moved_or_added:
-  - tests/IdempotencyTest.php
+    - "tests/LedgerConformanceTest.php"
+    - "tests/Conformance/"
+    - "tests/Fixture/"
+    - "tests/ownership.json"
+    - tests/IdempotencyTest.php
   remain_in_app_or_consumer:
   - Host transaction atomicity, adapter parity, authorization, concurrency, recovery
     and database matrix
@@ -250,7 +253,7 @@ documentation:
   integration_or_consumer: docs/integration.md
   examples:
   - examples/typed-consumer.php
-  changelog_record: CHANGELOG.md / 0.1.0
+  changelog_record: CHANGELOG.md / 0.1.1
 release_expectations:
   version_policy: Pre-1.0 exact immutable pin only after reviewed release; no release
     claimed.
@@ -267,11 +270,11 @@ next_task:
     release verification
   permitted_only_when:
   - All package gates pass
-  - CanonicalEncoder successor has exact immutable version and external attestation
+  - Exact canonical-json 0.1.1 dependency has independent external attestation
   - Human review and merge
   consumer_repository: kumwe/app
-  dependency_or_native_change: Replace dev canonical dependency with independently
-    verified exact release before publication; later adopt kumwe/idempotency
+  dependency_or_native_change: Retain exact canonical-json 0.1.1; verify its external
+    attestation and the Idempotency successor before consumer adoption
   namespace_or_api_replacements:
   - from: Kumwe\App\Delivery\Http\Api\Idempotency\IdempotencyKey
     to: Kumwe\Idempotency\IdempotencyKey
@@ -317,7 +320,7 @@ concurrency:
   - App composer.json and composer.lock
   - Host DI bindings
   related_migrations:
-  - CanonicalEncoder contract successor
+  - Published CanonicalEncoder 0.1.1 contract and corpus
   ownership_conflicts: []
   integration_train: null
   resolution_rule: semantic-preservation
@@ -332,38 +335,41 @@ decisions:
 - No App adoption, merge, tag or release in this task.
 - Candidate dependency ZIP isolation is not release provenance.
 blockers:
-- CanonicalEncoder immutable successor release and external dependency attestations
-  are not yet available.
+- Independent external dependency and successor release attestations remain required.
 ---
 
-# Migration/implementation summary
+## Migration/implementation summary
 
 The portable source and tests are implemented in this package. Host infrastructure remains in App. Source/API mapping and explicit ownership appear above.
 
-# Public API and responsibility
+## Public API and responsibility
 
 [Public API](docs/public-api.md), [architecture](docs/architecture.md) and [integration](docs/integration.md) define complete signatures, bounds, exceptions and authority.
 
-# Capability reuse/semantic input review
+## Capability reuse/semantic input review
 
-The explicit generic-v1 canonical port is reused; no executor or vendor algorithm is copied. Access Context is reused by audit context ports. Candidate install inputs are independently archived by the consumer gate and cannot authorize a release.
+The explicit generic-v1 canonical port is reused; no executor or vendor algorithm is copied. The exact runtime dependency is canonical-json 0.1.1 at e7006a2580a49a1c8ab507b0d7b9c3403b4f9f58; its corpus digest is recorded above. Publication is observed, while independent external attestation remains a separate requirement.
 
-# Consumer inventory
+## Consumer inventory
 
 The extracted-symbol mapping identifies old App/SDK imports. Before Phase 2 recompute imports, constructor calls, reflection strings, configuration and fixtures with `rg` against the current consumer commit. Inject the existing host canonical service through the port and leave adapter authority in App.
 
-# Test ownership
+## Test ownership
+
+The sequential port contract is now executable through `tests/LedgerConformanceTest.php`, the reusable `tests/Conformance/` suite and explicitly test-only `tests/Fixture/` adapters. `tests/ownership.json` and `composer ownership` enforce the complete source/test inventory. See [test ownership](docs/test-ownership.md) for reuse and the retained host responsibilities.
 
 Package tests own portable behavior and refusal cases. Original App tests remain temporarily because this is Phase 1; remove those implementation copies only in the separate verified adoption. Host concurrency, security, rollback and database tests remain.
 
-# Next-task execution notes
+## Next-task execution notes
 
-First review source changes and verify the canonical dependency successor. Replace the development dependency using Composer with its exact immutable release and verify external attestation. A human merges the package; automation publishes. Independently verify the release before any App namespace migration or class deletion.
+Review PR #4 and the completed sequential conformance suite. The dependency already pins published canonical-json 0.1.1; no development dependency replacement remains. Verify its independent attestation, then human review/merge and normal release automation can produce the successor. Independently verify that artifact before any App namespace migration or class deletion.
 
-# Drift check
+## Drift check
 
 Compare current App and SDK source against the source commits above. Reusable semantic changes require a separate upstream package change and release; do not maintain a host shadow implementation.
 
-# Validation recipe and observed local results
+## Validation recipe and observed local results
 
-Run `composer check`, `composer autoload:smoke`, `composer examples` and the release automation tests. PHP 8.5.10 behavior tests passed: 25 tests / 48 assertions. Final tested commits/trees and archive identities belong to external evidence, never self-referential handoff claims. Release/dependent-publication eligibility is not claimed.
+Current conformance follow-up on PHP 8.5.10: 40 tests / 154 assertions; the ownership inventory gate also passes. Published baseline 0.1.0 is observed at 26ec2ac31c493a088dd2bd01983b7428692bd1ea. The 0.1.1 heading proposes a successor, not an observed release. Final-head full CI and independent artifact verification remain required.
+
+Run `composer check`, `composer autoload:smoke`, `composer examples` and the release automation tests. PHP 8.5.10 behavior and conformance tests passed: 40 tests / 154 assertions. Final tested commits/trees and archive identities belong to external evidence, never self-referential handoff claims. Release/dependent-publication eligibility is not claimed.
