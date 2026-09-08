@@ -41,6 +41,7 @@
             "@lint",
             "@cs",
             "@analyse",
+            "@ownership",
             "@test",
             "@api",
             "@architecture",
@@ -48,7 +49,8 @@
             "@clean-consumer"
         ],
         "autoload:smoke": "php resources/toolchain/autoload-smoke.php",
-        "examples": "php examples/typed-consumer.php"
+        "examples": "php examples/typed-consumer.php",
+        "ownership": "php tools/verify-test-ownership.php"
     },
     "config": {
         "sort-packages": true
