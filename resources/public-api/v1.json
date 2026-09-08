@@ -1,7 +1,7 @@
 {
     "schema": "kumwe-package-public-api/v1",
     "package": "kumwe/idempotency",
-    "release": "0.1.0",
+    "release": "0.1.1",
     "namespace": "Kumwe\\Idempotency\\",
     "symbols": {
         "Kumwe\\Idempotency\\IdempotencyKey": {

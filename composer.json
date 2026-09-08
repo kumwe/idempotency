@@ -41,6 +41,7 @@
             "@lint",
             "@cs",
             "@analyse",
+            "@dependency-readiness",
             "@ownership",
             "@test",
             "@api",
@@ -50,7 +51,11 @@
         ],
         "autoload:smoke": "php resources/toolchain/autoload-smoke.php",
         "examples": "php examples/typed-consumer.php",
-        "ownership": "php tools/verify-test-ownership.php"
+        "ownership": "php tools/verify-test-ownership.php",
+        "dependency-readiness": [
+            "bash tools/check-dependency-readiness.sh",
+            "bash tools/test-dependency-readiness.sh"
+        ]
     },
     "config": {
         "sort-packages": true

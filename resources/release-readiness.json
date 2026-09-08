@@ -1,0 +1,10 @@
+{
+  "status": "review-ready",
+  "reason": "Source conformance and exact published dependency coordinates are recorded. Independent external artifact verification is tracked separately; null attestations are not verification claims.",
+  "dependencies": {
+    "kumwe/canonical-json": {
+      "version": "0.1.1",
+      "attestation": null
+    }
+  }
+}
