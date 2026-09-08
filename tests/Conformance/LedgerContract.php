@@ -86,12 +86,12 @@ abstract class LedgerContract extends TestCase
         $this->seed('request-1', ['state' => 'completed', 'expires_at' => 1100, 'body' => 'old', 'status' => 201]);
         $id = $ledger->find('actor', 'operation', 'request-1')['id'];
         $this->at(1099);
-        self::assertFalse($ledger->takeOverExpired($id, 'new-digest', 'new-auth', 'new-owner'));
+        self::assertFalse($ledger->takeOverExpired($id, hash('sha256', 'new-digest'), 'new-auth', 'new-owner'));
         $this->at(1100);
-        self::assertTrue($ledger->takeOverExpired($id, 'new-digest', 'new-auth', 'new-owner'));
-        self::assertFalse($ledger->takeOverExpired($id, 'other', 'other', 'other'));
+        self::assertTrue($ledger->takeOverExpired($id, hash('sha256', 'new-digest'), 'new-auth', 'new-owner'));
+        self::assertFalse($ledger->takeOverExpired($id, hash('sha256', 'other'), 'other', 'other'));
         $row = $ledger->find('actor', 'operation', 'request-1');
-        self::assertSame('new-digest', $row['request_digest']);
+        self::assertSame(hash('sha256', 'new-digest'), $row['request_digest']);
         self::assertSame('in_progress', $row['state']);
         self::assertNull($row['body']);
         self::assertNull($row['status']);
@@ -102,12 +102,12 @@ abstract class LedgerContract extends TestCase
         $ledger = $this->ledger();
         $this->seed('request-1', ['state' => 'failed']);
         $row = $ledger->find('actor', 'operation', 'request-1');
-        self::assertFalse($ledger->takeOverFailed($row['id'], 'wrong-digest', 'auth', 'owner-2'));
+        self::assertFalse($ledger->takeOverFailed($row['id'], hash('sha256', 'wrong-digest'), 'auth', 'owner-2'));
         self::assertSame($row, $ledger->find('actor', 'operation', 'request-1'));
         self::assertTrue($ledger->takeOverFailed($row['id'], $row['request_digest'], 'new-auth', 'owner-2'));
         self::assertFalse($ledger->takeOverFailed($row['id'], $row['request_digest'], 'auth', 'owner-3'));
-        self::assertFalse($ledger->takeOverExpired('unknown', 'digest', 'auth', 'owner'));
-        self::assertFalse($ledger->takeOverFailed('unknown', 'digest', 'auth', 'owner'));
+        self::assertFalse($ledger->takeOverExpired('unknown', hash('sha256', 'request'), 'auth', 'owner'));
+        self::assertFalse($ledger->takeOverFailed('unknown', hash('sha256', 'request'), 'auth', 'owner'));
         self::assertFalse($ledger->takeOverStale('unknown', 'auth', 'owner'));
     }
 
@@ -125,8 +125,8 @@ abstract class LedgerContract extends TestCase
     {
         $ledger = $this->secret();
         self::assertNull($ledger->find('actor', 'operation', 'request-1'));
-        self::assertTrue($ledger->reserve('actor', 'operation', 'request-1', 'digest', 'auth', 'owner'));
-        self::assertFalse($ledger->reserve('actor', 'operation', 'request-1', 'digest', 'auth', 'other'));
+        self::assertTrue($ledger->reserve('actor', 'operation', 'request-1', hash('sha256', 'request'), 'auth', 'owner'));
+        self::assertFalse($ledger->reserve('actor', 'operation', 'request-1', hash('sha256', 'request'), 'auth', 'other'));
         self::assertFalse($ledger->confirmLease('actor', 'operation', 'request-1', 'wrong', 'auth'));
         self::assertFalse($ledger->confirmLease('actor', 'operation', 'request-1', 'owner', 'wrong'));
         self::assertTrue($ledger->confirmLease('actor', 'operation', 'request-1', 'owner', 'auth'));
@@ -147,14 +147,14 @@ abstract class LedgerContract extends TestCase
         $this->seed('request-1', $overrides);
         $ledger = $this->secret();
         $before = $ledger->find('actor', 'operation', 'request-1');
-        self::assertSame($allowed, $ledger->takeOver('actor', 'operation', 'request-1', 'new', 'new-auth', 'new-owner'));
+        self::assertSame($allowed, $ledger->takeOver('actor', 'operation', 'request-1', hash('sha256', 'new'), 'new-auth', 'new-owner'));
         if (!$allowed) {
             self::assertSame($before, $ledger->find('actor', 'operation', 'request-1'));
             return;
         }
         self::assertTrue($ledger->confirmLease('actor', 'operation', 'request-1', 'new-owner', 'new-auth'));
         self::assertFalse($ledger->confirmLease('actor', 'operation', 'request-1', 'owner', 'auth'));
-        self::assertFalse($ledger->takeOver('actor', 'operation', 'request-1', 'other', 'other', 'other'));
+        self::assertFalse($ledger->takeOver('actor', 'operation', 'request-1', hash('sha256', 'other'), 'other', 'other'));
         self::assertNull($ledger->find('actor', 'operation', 'request-1')['body']);
     }
 
@@ -177,7 +177,7 @@ abstract class LedgerContract extends TestCase
         self::assertNotNull($ledger->find('actor', 'operation', 'request-1'));
         $ledger->release('actor', 'operation', 'request-1', 'owner');
         self::assertNull($ledger->find('actor', 'operation', 'request-1'));
-        self::assertFalse($ledger->takeOver('actor', 'operation', 'missing', 'new', 'auth', 'owner'));
+        self::assertFalse($ledger->takeOver('actor', 'operation', 'missing', hash('sha256', 'new'), 'auth', 'owner'));
     }
 
     public function testLegacySecretRewriteReplacesBytesAndIntegrityDigest(): void
