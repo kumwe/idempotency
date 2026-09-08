@@ -21,14 +21,16 @@ const CONTEXT_API_PACKAGE = 'kumwe/idempotency';
 const CONTEXT_API_MANIFEST = CONTEXT_API_ROOT . '/resources/public-api/v1.json';
 const CONTEXT_API_CHANGELOG = CONTEXT_API_ROOT . '/CHANGELOG.md';
 
-/** @var list<string> $arguments */
-$arguments = $_SERVER['argv'] ?? [];
-
-try {
-    exit(contextApiMain($arguments));
-} catch (Throwable $error) {
-    fwrite(STDERR, "Public API verification failed: {$error->getMessage()}\n");
-    exit(1);
+$scriptFilename = $_SERVER['SCRIPT_FILENAME'] ?? null;
+if (is_string($scriptFilename) && realpath($scriptFilename) === __FILE__) {
+    /** @var list<string> $arguments */
+    $arguments = $_SERVER['argv'] ?? [];
+    try {
+        exit(contextApiMain($arguments));
+    } catch (Throwable $error) {
+        fwrite(STDERR, "Public API verification failed: {$error->getMessage()}\n");
+        exit(1);
+    }
 }
 
 /**
@@ -340,9 +342,6 @@ function contextApiProperties(ReflectionClass $type, string $owner): array
         if ($property->getDeclaringClass()->getName() !== $owner) {
             continue;
         }
-        if ($type->isEnum() && in_array($property->getName(), ['name', 'value'], true)) {
-            continue;
-        }
         $propertyType = $property->getType();
         $properties[$property->getName()] = [
             'type' => $propertyType === null ? null : contextApiReflectionType($propertyType, $owner),
@@ -356,7 +355,7 @@ function contextApiProperties(ReflectionClass $type, string $owner): array
 }
 
 /**
- * Render declared public methods, omitting the engine-synthesized enum methods.
+ * Render every declared public method, including the public enum methods.
  *
  * @param   ReflectionClass<object>  $type   Reflected declaration.
  * @param   string                   $owner  Canonical declaring name.
@@ -370,9 +369,6 @@ function contextApiMethods(ReflectionClass $type, string $owner): array
     $methods = [];
     foreach ($type->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
         if ($method->getDeclaringClass()->getName() !== $owner) {
-            continue;
-        }
-        if ($type->isEnum() && in_array($method->getName(), ['cases', 'from', 'tryFrom'], true)) {
             continue;
         }
         $returnType = $method->getReturnType();

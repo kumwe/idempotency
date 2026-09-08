@@ -1,16 +1,46 @@
 {
-  "schema": "kumwe-package-capabilities/v1",
-  "package": "kumwe/idempotency",
-  "namespace": "Kumwe\\Idempotency",
-  "capabilities": [
-    "Immutable replay identities, request fingerprints, captured results, state transitions and durable ledger ports."
-  ],
-  "host_owned": [
-    "authorization",
-    "persistence",
-    "transactions",
-    "retention",
-    "external effects"
-  ],
-  "canonical_profile": "kumwe-canonical-json/generic-v1"
+    "schema": "kumwe-package-capabilities/v1",
+    "package": "kumwe/idempotency",
+    "release": "0.1.2",
+    "namespace": "Kumwe\\Idempotency\\",
+    "responsibility": "Immutable replay identities, GenericV1 request fingerprints, captured results and ledger contracts.",
+    "non_responsibilities": [
+        "Host authorization and credential admission",
+        "Persistence, transaction coupling and concurrent storage",
+        "Retention scheduling and external effects"
+    ],
+    "capabilities": [
+        {
+            "id": "idempotency.replay-values",
+            "title": "Replay identity and immutable state",
+            "description": "Bounded keys, immutable state transitions and captured responses use an explicitly supplied GenericV1 canonical encoder.",
+            "symbols": [
+                "Kumwe\\Idempotency\\IdempotencyKey",
+                "Kumwe\\Idempotency\\IdempotencyRecord",
+                "Kumwe\\Idempotency\\IdempotencyResult",
+                "Kumwe\\Idempotency\\IdempotencyState"
+            ],
+            "documentation": [
+                "docs/public-api.md",
+                "docs/architecture.md"
+            ]
+        },
+        {
+            "id": "idempotency.ledger-contracts",
+            "title": "Ledger and retention contracts",
+            "description": "Durable owner-fenced replay, secret-once replay and bounded purge interfaces; the consumer supplies storage and transactions.",
+            "symbols": [
+                "Kumwe\\Idempotency\\IdempotencyLedger",
+                "Kumwe\\Idempotency\\IdempotencyPurger",
+                "Kumwe\\Idempotency\\SecretOnceIdempotencyLedger"
+            ],
+            "documentation": [
+                "docs/public-api.md",
+                "docs/test-ownership.md",
+                "docs/integration.md"
+            ]
+        }
+    ],
+    "native_requirements": null,
+    "deprecations": []
 }

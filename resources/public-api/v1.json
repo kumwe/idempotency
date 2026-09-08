@@ -1,7 +1,7 @@
 {
     "schema": "kumwe-package-public-api/v1",
     "package": "kumwe/idempotency",
-    "release": "0.1.1",
+    "release": "0.1.2",
     "namespace": "Kumwe\\Idempotency\\",
     "symbols": {
         "Kumwe\\Idempotency\\IdempotencyKey": {
@@ -660,8 +660,54 @@
                     "type": "string"
                 }
             },
-            "properties": {},
-            "methods": {},
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "static": false,
+                    "readonly": true
+                },
+                "value": {
+                    "type": "string",
+                    "static": false,
+                    "readonly": true
+                }
+            },
+            "methods": {
+                "cases": {
+                    "visibility": "public",
+                    "static": true,
+                    "parameters": [],
+                    "return": "array"
+                },
+                "from": {
+                    "visibility": "public",
+                    "static": true,
+                    "parameters": [
+                        {
+                            "name": "value",
+                            "type": "string|int",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "Kumwe\\Idempotency\\IdempotencyState"
+                },
+                "tryFrom": {
+                    "visibility": "public",
+                    "static": true,
+                    "parameters": [
+                        {
+                            "name": "value",
+                            "type": "string|int",
+                            "optional": false,
+                            "variadic": false,
+                            "by_reference": false
+                        }
+                    ],
+                    "return": "?Kumwe\\Idempotency\\IdempotencyState"
+                }
+            },
             "deprecated": null
         },
         "Kumwe\\Idempotency\\SecretOnceIdempotencyLedger": {

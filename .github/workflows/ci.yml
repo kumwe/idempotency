@@ -44,6 +44,7 @@ jobs:
           composer validate --strict
           composer install --no-interaction --prefer-dist
           composer audit --abandoned=fail
+          composer governance:install
 
       - name: Run the complete package gate
         run: composer check

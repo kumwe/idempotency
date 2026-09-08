@@ -45,6 +45,7 @@
             "@ownership",
             "@test",
             "@api",
+            "@governance",
             "@architecture",
             "@security",
             "@clean-consumer"
@@ -55,7 +56,14 @@
         "dependency-readiness": [
             "bash tools/check-dependency-readiness.sh",
             "bash tools/test-dependency-readiness.sh"
-        ]
+        ],
+        "governance": [
+            "node tools/governance/verify.cjs",
+            "node tools/governance/test.cjs"
+        ],
+        "governance:install": "npm ci --prefix tools/governance --ignore-scripts",
+        "docs": "php tools/render-public-api.php",
+        "docs:record": "php tools/render-public-api.php --write"
     },
     "config": {
         "sort-packages": true

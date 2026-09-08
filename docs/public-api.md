@@ -1,15 +1,19 @@
 # Public API
 
-The source contracts below define parameters, return values, exceptions and invariants. [The machine manifest](../resources/public-api/v1.json) freezes signatures and is checked by `composer api`. All values are immutable; static helpers have no retained state and perform no I/O. Host port implementations own their documented side effects and concurrency guarantees. The injected canonical encoder must implement GenericV1; no service is resolved globally.
+Generated from package source. The contracts below retain source PHPDoc, complete callable signatures, public properties and constants. The canonical manifest is `resources/public-api/v1.json`. Run `composer docs` to reject drift. Host adapters retain persistence, authorization and transactions.
 
 ## Kumwe\Idempotency\IdempotencyKey
 
 Source: [src/IdempotencyKey.php](../src/IdempotencyKey.php).
 
+```text
+Validated caller-supplied identity of one replay-protected operation. @since 0.1.0
+```
+
 ### `fromString`
 
 ```php
-public static function fromString(string $value): self
+public static function fromString(string $value): Kumwe\Idempotency\IdempotencyKey
 ```
 
 ```text
@@ -23,7 +27,7 @@ public static function fromString(string $value): self
 ### `fromHeader`
 
 ```php
-public static function fromHeader(string $value): self
+public static function fromHeader(string $value): Kumwe\Idempotency\IdempotencyKey
 ```
 
 ```text
@@ -48,7 +52,7 @@ public function value(): string
 ### `equals`
 
 ```php
-public function equals(self $other): bool
+public function equals(Kumwe\Idempotency\IdempotencyKey $other): bool
 ```
 
 ```text
@@ -69,17 +73,28 @@ public function __toString(): string
 
 Source: [src/IdempotencyLedger.php](../src/IdempotencyLedger.php).
 
+```text
+Contract for the durable ledger that lets a replay-protected mutation run at most once per key.
+
+Application owns this contract for the same reason it owns `TransactionManager`: which operations are
+replay-protected, and what a reservation means, are use-case decisions, while the store that keeps
+them is a driver detail. `PersistentIdempotencyMiddleware` walks this port through a whole reservation
+lifecycle — reserve, read back after a collision, take a dead record over, complete, release — and
+`DoctrineIdempotencyLedger` is the shipped adapter. Nothing here names a connection, a platform or a
+query builder, so the delivery layer that consumes it never sees the database it writes.
+
+A record is keyed by subject, operation and idempotency key, and the implementation must arbitrate
+concurrent first attempts on that identity itself — `reserve()` is expected to be decided by a unique
+constraint rather than by a read that another request could interleave with. Every conditional write
+answers with a truthful boolean: true only when this caller's claim landed on exactly one record.
+
+@since  0.1.0
+```
+
 ### `reserve`
 
 ```php
-public function reserve(
-        string $subject,
-        string $operation,
-        string $key,
-        string $requestDigest,
-        string $authorizationFingerprint,
-        string $ownerToken,
-    ): bool
+public function reserve(string $subject, string $operation, string $key, string $requestDigest, string $authorizationFingerprint, string $ownerToken): bool
 ```
 
 ```text
@@ -124,12 +139,7 @@ Read the stored record a failed reservation collided with.
 ### `takeOverExpired`
 
 ```php
-public function takeOverExpired(
-        string $id,
-        string $requestDigest,
-        string $authorizationFingerprint,
-        string $ownerToken,
-    ): bool
+public function takeOverExpired(string $id, string $requestDigest, string $authorizationFingerprint, string $ownerToken): bool
 ```
 
 ```text
@@ -151,12 +161,7 @@ request: its key is free for whatever content the new claimant carries.
 ### `takeOverFailed`
 
 ```php
-public function takeOverFailed(
-        string $id,
-        string $requestDigest,
-        string $authorizationFingerprint,
-        string $ownerToken,
-    ): bool
+public function takeOverFailed(string $id, string $requestDigest, string $authorizationFingerprint, string $ownerToken): bool
 ```
 
 ```text
@@ -197,15 +202,7 @@ there is nothing to rewrite.
 ### `complete`
 
 ```php
-public function complete(
-        string $subject,
-        string $operation,
-        string $key,
-        string $ownerToken,
-        int $status,
-        string $body,
-        array $headers,
-    ): bool
+public function complete(string $subject, string $operation, string $key, string $ownerToken, int $status, string $body, array $headers): bool
 ```
 
 ```text
@@ -255,10 +252,23 @@ has since taken over, or one that already completed, is untouched.
 
 Source: [src/IdempotencyPurger.php](../src/IdempotencyPurger.php).
 
+```text
+Contract for reclaiming idempotency records whose retention window has closed.
+
+An idempotency store grows with every replay-protected request, so something has to reclaim the
+records nobody can replay any more. An implementation deletes in bounded batches and must leave
+any record a request still owns — an unexpired lock, or an owner token not yet released — in
+place, so a purge running beside live traffic never strips the protection from an operation still
+in flight. The scheduled `PurgeIdempotencyRecordsHandler` drives the loop, and stops as soon as a
+call returns a short batch.
+
+@since  0.1.0
+```
+
 ### `purgeExpired`
 
 ```php
-public function purgeExpired(int $batchSize = 1_000): int
+public function purgeExpired(int $batchSize = 1000): int
 ```
 
 ```text
@@ -278,18 +288,28 @@ remain, while anything short of the batch size means the backlog is drained for 
 
 Source: [src/IdempotencyRecord.php](../src/IdempotencyRecord.php).
 
+```text
+One entry in the idempotency ledger: the request that claimed a key, and the answer it may replay.
+
+This is where the replay rules live, so no caller has to re-derive them. The request itself is never
+kept — only the SHA-256 of its canonical encoding — so a repeat can be proved identical without the
+ledger retaining a payload, and a repeat that differs is rejected rather than quietly served the
+first request's answer. Every rule that could make a stored answer wrong is enforced in one place:
+the constructor refuses a record whose result and state disagree, and each transition returns a new
+instance rather than mutating the one already handed out.
+
+The private constructor makes `begin()` the only way in and `complete()` or `fail()` the only ways
+out of `IN_PROGRESS`, so the lifecycle cannot be entered halfway or run backwards. Subject and
+operation travel with the key because a key means nothing on its own — a store scopes it to one
+caller and one operation before looking it up.
+
+@since  0.1.0
+```
+
 ### `begin`
 
 ```php
-public static function begin(
-        IdempotencyKey $key,
-        string $subject,
-        string $operation,
-        mixed $request,
-        DateTimeImmutable $createdAt,
-        DateTimeImmutable $expiresAt,
-        CanonicalEncoder $encoder,
-    ): self
+public static function begin(Kumwe\Idempotency\IdempotencyKey $key, string $subject, string $operation, mixed $request, DateTimeImmutable $createdAt, DateTimeImmutable $expiresAt, Kumwe\CanonicalJson\CanonicalEncoder $encoder): Kumwe\Idempotency\IdempotencyRecord
 ```
 
 ```text
@@ -337,7 +357,7 @@ Creation time retained across immutable transitions. @since 0.1.0
 ### `key`
 
 ```php
-public function key(): IdempotencyKey
+public function key(): Kumwe\Idempotency\IdempotencyKey
 ```
 
 ```text
@@ -395,7 +415,7 @@ This is all the record keeps of that request, and it is what a later replay is c
 ### `state`
 
 ```php
-public function state(): IdempotencyState
+public function state(): Kumwe\Idempotency\IdempotencyState
 ```
 
 ```text
@@ -466,7 +486,7 @@ cannot narrow down the stored digest by timing how far a mismatch got.
 ### `complete`
 
 ```php
-public function complete(IdempotencyResult $result): self
+public function complete(Kumwe\Idempotency\IdempotencyResult $result): Kumwe\Idempotency\IdempotencyRecord
 ```
 
 ```text
@@ -484,7 +504,7 @@ Close the claim successfully, attaching the answer a later replay will hand back
 ### `fail`
 
 ```php
-public function fail(): self
+public function fail(): Kumwe\Idempotency\IdempotencyRecord
 ```
 
 ```text
@@ -503,7 +523,7 @@ of looking unclaimed to the next request that presents it.
 ### `replay`
 
 ```php
-public function replay(mixed $request, DateTimeImmutable $time): IdempotencyResult
+public function replay(mixed $request, DateTimeImmutable $time): Kumwe\Idempotency\IdempotencyResult
 ```
 
 ```text
@@ -531,10 +551,22 @@ given a stale or absent answer.
 
 Source: [src/IdempotencyResult.php](../src/IdempotencyResult.php).
 
+```text
+Response an idempotent operation produced, kept so a repeat of the request can be answered from it.
+
+An `IdempotencyRecord` carries one of these exactly while it is `COMPLETED`. What is kept is
+deliberately narrow — a status code and a decoded body, no headers — because that is the whole of
+what a replay reproduces. Alongside them sits a digest of the body, taken at construction from its
+canonical encoding, so a store that writes the body out and reads it back later can prove the payload
+it recovered is still the response that was captured rather than replay something altered in transit.
+
+@since  0.1.0
+```
+
 ### `__construct`
 
 ```php
-public function __construct(private int $statusCode, array $body, CanonicalEncoder $encoder)
+public function __construct(int $statusCode, array $body, Kumwe\CanonicalJson\CanonicalEncoder $encoder)
 ```
 
 ```text
@@ -608,21 +640,85 @@ Return the fingerprint a store compares a persisted body against.
 
 Source: [src/IdempotencyState.php](../src/IdempotencyState.php).
 
+```text
+Stage one entry in the idempotency ledger has reached.
+
+An entry is opened `IN_PROGRESS` when a key is claimed and leaves that stage exactly once, for
+`COMPLETED` if a result was captured or `FAILED` if none was. `IdempotencyRecord` hangs its
+invariants on that split: a result may be carried only alongside `COMPLETED`, only an `IN_PROGRESS`
+entry may still transition, and only a `COMPLETED` one can answer a replay. The backing strings are
+the values the API idempotency table keeps in its `state` column, so the enum and a stored row spell
+the same three stages.
+
+`BusinessRecord\Domain\BusinessRecordIdempotencyState` models the same three stages for the
+business-record command ledger; the two are separate types because the ledgers are separate.
+
+@since  0.1.0
+```
+
+### `IN_PROGRESS`
+
+Enum case backed value: `'in_progress'`.
+
+### `COMPLETED`
+
+Enum case backed value: `'completed'`.
+
+### `FAILED`
+
+Enum case backed value: `'failed'`.
+
+### `$name`
+
+```php
+public readonly string $name;
+```
+
+### `$value`
+
+```php
+public readonly string $value;
+```
+
+### `cases`
+
+```php
+public static function cases(): array
+```
+
+### `from`
+
+```php
+public static function from(string|int $value): Kumwe\Idempotency\IdempotencyState
+```
+
+### `tryFrom`
+
+```php
+public static function tryFrom(string|int $value): ?Kumwe\Idempotency\IdempotencyState
+```
+
 ## Kumwe\Idempotency\SecretOnceIdempotencyLedger
 
 Source: [src/SecretOnceIdempotencyLedger.php](../src/SecretOnceIdempotencyLedger.php).
 
+```text
+Contract for the ledger behind token mutations, whose stored replays must never carry the secret.
+
+This is the second flavour of the idempotency seam: `SecretOnceIdempotencyMiddleware` guards the two
+routes whose success body carries a live credential, and its ledger differs from `IdempotencyLedger`
+on purpose — a short lease because a token mutation is one quick write, a single combined takeover for
+failed, expired and lapsed records, a locked ownership re-proof inside the caller's transaction, and a
+rewrite hook that strips a legacy stored secret on its first replay. Application owns the contract;
+`DoctrineSecretOnceIdempotencyLedger` adapts it, and no signature here names a driver type.
+
+@since  0.1.0
+```
+
 ### `reserve`
 
 ```php
-public function reserve(
-        string $subject,
-        string $operation,
-        string $key,
-        string $requestDigest,
-        string $authorizationFingerprint,
-        string $ownerToken,
-    ): bool
+public function reserve(string $subject, string $operation, string $key, string $requestDigest, string $authorizationFingerprint, string $ownerToken): bool
 ```
 
 ```text
@@ -670,14 +766,7 @@ lock, by `confirmLease()`.
 ### `takeOver`
 
 ```php
-public function takeOver(
-        string $subject,
-        string $operation,
-        string $key,
-        string $requestDigest,
-        string $authorizationFingerprint,
-        string $ownerToken,
-    ): bool
+public function takeOver(string $subject, string $operation, string $key, string $requestDigest, string $authorizationFingerprint, string $ownerToken): bool
 ```
 
 ```text
@@ -702,13 +791,7 @@ alone, which is what the false return reports.
 ### `confirmLease`
 
 ```php
-public function confirmLease(
-        string $subject,
-        string $operation,
-        string $key,
-        string $ownerToken,
-        string $authorizationFingerprint,
-    ): bool
+public function confirmLease(string $subject, string $operation, string $key, string $ownerToken, string $authorizationFingerprint): bool
 ```
 
 ```text
@@ -733,16 +816,7 @@ set of credentials cannot be spent under another.
 ### `complete`
 
 ```php
-public function complete(
-        string $subject,
-        string $operation,
-        string $key,
-        string $ownerToken,
-        string $authorizationFingerprint,
-        int $status,
-        string $body,
-        array $headers,
-    ): bool
+public function complete(string $subject, string $operation, string $key, string $ownerToken, string $authorizationFingerprint, int $status, string $body, array $headers): bool
 ```
 
 ```text
