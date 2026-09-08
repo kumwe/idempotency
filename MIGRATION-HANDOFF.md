@@ -9,18 +9,18 @@ source:
     repository: https://github.com/kumwe/app
     baseline_commit: 24ecf956423c18933e824b43cea1bfb9127a79a9
     examined_paths:
-    - app/src/Application/Automation/IdempotencyPurger.php
-    - app/src/Application/Automation/IdempotencyRecord.php
-    - app/src/Application/Automation/IdempotencyResult.php
-    - app/src/Application/Automation/IdempotencyState.php
-    - app/src/Application/Idempotency/IdempotencyLedger.php
-    - app/src/Application/Idempotency/SecretOnceIdempotencyLedger.php
-    - app/src/Delivery/Http/Api/Idempotency/IdempotencyKey.php
+    - src/Application/Automation/IdempotencyPurger.php
+    - src/Application/Automation/IdempotencyRecord.php
+    - src/Application/Automation/IdempotencyResult.php
+    - src/Application/Automation/IdempotencyState.php
+    - src/Application/Idempotency/IdempotencyLedger.php
+    - src/Application/Idempotency/SecretOnceIdempotencyLedger.php
+    - src/Delivery/Http/Api/Idempotency/IdempotencyKey.php
     old_namespace_roots:
     - Kumwe\App\Application\Automation
     - Kumwe\App\Delivery\Http\Api\Idempotency
     - Kumwe\Extension\Spi\Application\Automation
-    capability_index_sha256: null
+    capability_index_sha256: 8fb2a8680bed6ac1456183bc9e48fe040194923b6d1b3331f04cea28bd5a9b2f
   semantic_inputs:
   - owner: kumwe/canonical-json
     version_or_commit: v0.1.1
@@ -67,7 +67,7 @@ framework_php:
   extracted_symbols:
   - old_fqcn: Kumwe\App\Delivery\Http\Api\Idempotency\IdempotencyKey
     new_fqcn: Kumwe\Idempotency\IdempotencyKey
-    source_path: app/src/Delivery/Http/Api/Idempotency/IdempotencyKey.php
+    source_path: src/Delivery/Http/Api/Idempotency/IdempotencyKey.php
     target_path: src/IdempotencyKey.php
     kind: class
     public_methods:
@@ -87,7 +87,7 @@ framework_php:
       snapshot semantics.
   - old_fqcn: Kumwe\App\Application\Idempotency\IdempotencyLedger
     new_fqcn: Kumwe\Idempotency\IdempotencyLedger
-    source_path: app/src/Application/Idempotency/IdempotencyLedger.php
+    source_path: src/Application/Idempotency/IdempotencyLedger.php
     target_path: src/IdempotencyLedger.php
     kind: interface
     public_methods:
@@ -109,7 +109,7 @@ framework_php:
       snapshot semantics.
   - old_fqcn: Kumwe\App\Application\Automation\IdempotencyPurger
     new_fqcn: Kumwe\Idempotency\IdempotencyPurger
-    source_path: app/src/Application/Automation/IdempotencyPurger.php
+    source_path: src/Application/Automation/IdempotencyPurger.php
     target_path: src/IdempotencyPurger.php
     kind: interface
     public_methods:
@@ -125,7 +125,7 @@ framework_php:
       snapshot semantics.
   - old_fqcn: Kumwe\App\Application\Automation\IdempotencyRecord
     new_fqcn: Kumwe\Idempotency\IdempotencyRecord
-    source_path: app/src/Application/Automation/IdempotencyRecord.php
+    source_path: src/Application/Automation/IdempotencyRecord.php
     target_path: src/IdempotencyRecord.php
     kind: class
     public_methods:
@@ -154,7 +154,7 @@ framework_php:
       snapshot semantics.
   - old_fqcn: Kumwe\App\Application\Automation\IdempotencyResult
     new_fqcn: Kumwe\Idempotency\IdempotencyResult
-    source_path: app/src/Application/Automation/IdempotencyResult.php
+    source_path: src/Application/Automation/IdempotencyResult.php
     target_path: src/IdempotencyResult.php
     kind: class
     public_methods:
@@ -174,7 +174,7 @@ framework_php:
       snapshot semantics.
   - old_fqcn: Kumwe\App\Application\Automation\IdempotencyState
     new_fqcn: Kumwe\Idempotency\IdempotencyState
-    source_path: app/src/Application/Automation/IdempotencyState.php
+    source_path: src/Application/Automation/IdempotencyState.php
     target_path: src/IdempotencyState.php
     kind: enum
     public_methods: []
@@ -189,7 +189,7 @@ framework_php:
       snapshot semantics.
   - old_fqcn: Kumwe\App\Application\Idempotency\SecretOnceIdempotencyLedger
     new_fqcn: Kumwe\Idempotency\SecretOnceIdempotencyLedger
-    source_path: app/src/Application/Idempotency/SecretOnceIdempotencyLedger.php
+    source_path: src/Application/Idempotency/SecretOnceIdempotencyLedger.php
     target_path: src/SecretOnceIdempotencyLedger.php
     kind: interface
     public_methods:
@@ -293,19 +293,70 @@ next_task:
   files_to_update:
   - composer.json
   - composer.lock
-  - App explicit adapter/encoder service bindings
+  - src/Application/Automation/Job/PurgeIdempotencyRecordsHandler.php
+  - src/Application/Automation/ScheduleOccurrenceKey.php
+  - src/BusinessRecord/Application/BusinessRecordService.php
+  - src/BusinessRecord/Application/Command/ArchiveRecordCommand.php
+  - src/BusinessRecord/Application/Command/CreateRecordCommand.php
+  - src/BusinessRecord/Application/Command/DeleteRecordCommand.php
+  - src/BusinessRecord/Application/Command/ExecuteRecordActionCommand.php
+  - src/BusinessRecord/Application/Command/RelateRecordsCommand.php
+  - src/BusinessRecord/Application/Command/ReorderRecordLinesCommand.php
+  - src/BusinessRecord/Application/Command/RestoreRecordCommand.php
+  - src/BusinessRecord/Application/Command/UnrelateRecordsCommand.php
+  - src/BusinessRecord/Application/Command/UpdateRecordCommand.php
+  - src/BusinessRecord/Application/Command/WriteDocumentCommand.php
+  - src/BusinessSurface/Application/BusinessBulkMutation.php
+  - src/BusinessSurface/Application/BusinessSurfaceService.php
+  - src/BusinessSurface/Application/Custom/CustomBusinessActionLedgerResult.php
+  - src/BusinessSurface/Delivery/Browser/GeneratedBusinessBrowserController.php
+  - src/Delivery/Console/Command/ManageBusinessRecordsCommand.php
+  - src/Delivery/Http/Api/Idempotency/PersistentIdempotencyMiddleware.php
+  - src/Delivery/Http/Api/Idempotency/RequireIdempotencyKeyMiddleware.php
+  - src/Delivery/Http/Api/Idempotency/SecretOnceIdempotencyMiddleware.php
+  - src/Delivery/Http/Api/Plan/PlanPreviewHandler.php
+  - src/Demo/Infrastructure/VdmBusinessDemoInstaller.php
+  - src/Infrastructure/Automation/DoctrineIdempotencyPurger.php
+  - src/Infrastructure/Persistence/DoctrineIdempotencyLedger.php
+  - src/Infrastructure/Persistence/DoctrineSecretOnceIdempotencyLedger.php
+  - src/Kernel/ContainerFactory.php
   files_to_remove:
-  - app/src/Delivery/Http/Api/Idempotency/IdempotencyKey.php
-  - app/src/Application/Idempotency/IdempotencyLedger.php
-  - app/src/Application/Automation/IdempotencyPurger.php
-  - app/src/Application/Automation/IdempotencyRecord.php
-  - app/src/Application/Automation/IdempotencyResult.php
-  - app/src/Application/Automation/IdempotencyState.php
-  - app/src/Application/Idempotency/SecretOnceIdempotencyLedger.php
+  - src/Delivery/Http/Api/Idempotency/IdempotencyKey.php
+  - src/Application/Idempotency/IdempotencyLedger.php
+  - src/Application/Automation/IdempotencyPurger.php
+  - src/Application/Automation/IdempotencyRecord.php
+  - src/Application/Automation/IdempotencyResult.php
+  - src/Application/Automation/IdempotencyState.php
+  - src/Application/Idempotency/SecretOnceIdempotencyLedger.php
   tests_to_remove:
-  - Implementation-unit tests corresponding to package tests after verified adoption
+  - tests/Unit/Delivery/Http/Api/Idempotency/IdempotencyKeyTest.php
+  - tests/Unit/Application/Automation/IdempotencyRecordTest.php
   tests_to_retain_or_add:
-  - All host database, authorization, transaction, concurrency and recovery tests
+  - tests/Architecture/IdempotencySeamBoundaryTest.php
+  - tests/Functional/BusinessSurface/GeneratedBusinessAdapterParityTest.php
+  - tests/Integration/Automation/IdempotencyFirstClaimContentionIntegrationTest.php
+  - tests/Integration/Automation/IdempotencyRecoveryIntegrationTest.php
+  - tests/Integration/BusinessRecord/BusinessNumberSequenceContentionIntegrationTest.php
+  - tests/Integration/BusinessRecord/BusinessNumberSequenceIdentityIntegrationTest.php
+  - tests/Integration/BusinessRecord/BusinessRecordClientReferenceIntegrationTest.php
+  - tests/Integration/BusinessRecord/CorrectionAfterPeriodCloseIntegrationTest.php
+  - tests/Integration/BusinessRecord/FiscalPeriodSequenceIntegrationTest.php
+  - tests/Integration/BusinessRecord/PostingPeriodLockIntegrationTest.php
+  - tests/Integration/Delivery/Http/Api/Idempotency/SecretOnceIdempotencyMiddlewareTest.php
+  - tests/Integration/Demo/Infrastructure/DemoBusinessProfileExporterTest.php
+  - tests/Support/NeutralBusinessFixture.php
+  - tests/Unit/Application/Automation/PurgeIdempotencyRecordsHandlerTest.php
+  - tests/Unit/BusinessRecord/Application/BusinessRecordRelationshipCoordinatorTest.php
+  - tests/Unit/BusinessRecord/Application/WriteDocumentCommandTest.php
+  - tests/Unit/BusinessSurface/Application/Custom/CustomBusinessActionExecutorTest.php
+  - tests/Unit/BusinessSurface/Application/Custom/CustomBusinessHandlerRegistryTest.php
+  - tests/Unit/Delivery/Http/Api/ApiPreconditionMiddlewareTest.php
+  - tests/Unit/Delivery/Http/Api/Business/BusinessOperationStatusApiHandlerTest.php
+  - tests/Unit/Delivery/Http/Api/Business/BusinessRecordApiHandlerTest.php
+  - tests/Unit/Delivery/Http/Api/Business/BusinessRecordApiRequestTest.php
+  - tests/Unit/Delivery/Http/Api/Idempotency/PersistentIdempotencyAuthorizationTest.php
+  - tests/Unit/Delivery/Http/Api/Idempotency/PersistentIdempotencyMiddlewareTest.php
+  - tests/Unit/Delivery/Http/Api/Plan/PlanPreviewHandlerTest.php
   di_or_provisioning_changes:
   - Bind ports to host adapters; inject CanonicalEncoder explicitly
   capability_index_changes:
@@ -352,7 +403,7 @@ The explicit generic-v1 canonical port is reused; no executor or vendor algorith
 
 ## Consumer inventory
 
-The extracted-symbol mapping identifies old App/SDK imports. Before Phase 2 recompute imports, constructor calls, reflection strings, configuration and fixtures with `rg` against the current consumer commit. Inject the existing host canonical service through the port and leave adapter authority in App.
+[The baseline consumer inventory](docs/consumer-inventory.json) records all seven extracted source-file digests, direct App/SDK imports, lexical review candidates, two implementation-owned tests to remove only after verified adoption, and the host tests to retain. The examined paths are relative to the App repository root (`src/`, not `app/src/`). Before Phase 2 recompute imports, constructor calls, reflection strings, configuration and fixtures with `rg` against the current consumer commit. Inject the existing host canonical service through the port and leave adapter authority in App.
 
 ## Test ownership
 

@@ -1,0 +1,244 @@
+{
+  "schema": "kumwe-idempotency-consumer-inventory/v1",
+  "repository": "https://github.com/kumwe/app",
+  "baseline_commit": "24ecf956423c18933e824b43cea1bfb9127a79a9",
+  "source": [
+    {
+      "file": "src/Delivery/Http/Api/Idempotency/IdempotencyKey.php",
+      "sha256": "6e86592448e7a3151eecb9cea31ca0f3083019a73e4cad0d3099d972df4fdcb9"
+    },
+    {
+      "file": "src/Application/Idempotency/IdempotencyLedger.php",
+      "sha256": "9f93572d87e6a96e232585934384ec3e68760d4cb2db740e2b8b95e3abab855a"
+    },
+    {
+      "file": "src/Application/Idempotency/SecretOnceIdempotencyLedger.php",
+      "sha256": "e1c78a5b0392c9dc3d671512db4b2672e80b5ffb5d4e05e5fc550150b8c332c4"
+    },
+    {
+      "file": "src/Application/Automation/IdempotencyPurger.php",
+      "sha256": "1e8541332a711869756af3306913cfe32bb5b5a74da7bf4d828b973cfaf2efbd"
+    },
+    {
+      "file": "src/Application/Automation/IdempotencyRecord.php",
+      "sha256": "6681ec901b8fec3fca9af163d72a22877fae52aabe325122da881f56ee8b1736"
+    },
+    {
+      "file": "src/Application/Automation/IdempotencyResult.php",
+      "sha256": "10b7b17c5cc5adf57e156198f10ea560430e7a9aca83b53fb26d64bb604d6878"
+    },
+    {
+      "file": "src/Application/Automation/IdempotencyState.php",
+      "sha256": "bf55149f81c23aed42ea3c35b66754e56239fbee1a2310f86a4ee2e00a371ea5"
+    }
+  ],
+  "consumers": [
+    {
+      "file": "src/Application/Automation/Job/PurgeIdempotencyRecordsHandler.php",
+      "imports": [
+        "Kumwe\\App\\Application\\Automation\\IdempotencyPurger"
+      ]
+    },
+    {
+      "file": "src/Application/Automation/ScheduleOccurrenceKey.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/BusinessRecordService.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/ArchiveRecordCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/CreateRecordCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/DeleteRecordCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/ExecuteRecordActionCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/RelateRecordsCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/ReorderRecordLinesCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/RestoreRecordCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/UnrelateRecordsCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/UpdateRecordCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessRecord/Application/Command/WriteDocumentCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessSurface/Application/BusinessBulkMutation.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessSurface/Application/BusinessSurfaceService.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessSurface/Application/Custom/CustomBusinessActionLedgerResult.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/BusinessSurface/Delivery/Browser/GeneratedBusinessBrowserController.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/Delivery/Console/Command/ManageBusinessRecordsCommand.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/Delivery/Http/Api/Business/BusinessRecordApiRequest.php",
+      "imports": []
+    },
+    {
+      "file": "src/Delivery/Http/Api/Idempotency/PersistentIdempotencyMiddleware.php",
+      "imports": [
+        "Kumwe\\App\\Application\\Idempotency\\IdempotencyLedger"
+      ]
+    },
+    {
+      "file": "src/Delivery/Http/Api/Idempotency/RequireIdempotencyKeyMiddleware.php",
+      "imports": []
+    },
+    {
+      "file": "src/Delivery/Http/Api/Idempotency/SecretOnceIdempotencyMiddleware.php",
+      "imports": [
+        "Kumwe\\App\\Application\\Idempotency\\SecretOnceIdempotencyLedger"
+      ]
+    },
+    {
+      "file": "src/Delivery/Http/Api/Plan/PlanPreviewHandler.php",
+      "imports": [
+        "Kumwe\\App\\Delivery\\Http\\Api\\Idempotency\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/Demo/Infrastructure/VdmBusinessDemoInstaller.php",
+      "imports": [
+        "Kumwe\\Extension\\Spi\\Application\\Automation\\IdempotencyKey"
+      ]
+    },
+    {
+      "file": "src/Infrastructure/Automation/DoctrineIdempotencyPurger.php",
+      "imports": [
+        "Kumwe\\App\\Application\\Automation\\IdempotencyPurger"
+      ]
+    },
+    {
+      "file": "src/Infrastructure/Persistence/DoctrineIdempotencyLedger.php",
+      "imports": [
+        "Kumwe\\App\\Application\\Idempotency\\IdempotencyLedger"
+      ]
+    },
+    {
+      "file": "src/Infrastructure/Persistence/DoctrineSecretOnceIdempotencyLedger.php",
+      "imports": [
+        "Kumwe\\App\\Application\\Idempotency\\SecretOnceIdempotencyLedger"
+      ]
+    },
+    {
+      "file": "src/Kernel/ContainerFactory.php",
+      "imports": [
+        "Kumwe\\App\\Application\\Automation\\IdempotencyPurger",
+        "Kumwe\\App\\Application\\Idempotency\\IdempotencyLedger",
+        "Kumwe\\App\\Application\\Idempotency\\SecretOnceIdempotencyLedger"
+      ]
+    },
+    {
+      "file": "src/OpenApi/Application/OpenApiContractCompiler.php",
+      "imports": []
+    }
+  ],
+  "tests_to_remove_after_verified_adoption": [
+    "tests/Unit/Delivery/Http/Api/Idempotency/IdempotencyKeyTest.php",
+    "tests/Unit/Application/Automation/IdempotencyRecordTest.php"
+  ],
+  "tests_to_retain_and_update_imports": [
+    "tests/Architecture/IdempotencySeamBoundaryTest.php",
+    "tests/Functional/BusinessSurface/GeneratedBusinessAdapterParityTest.php",
+    "tests/Integration/Automation/IdempotencyFirstClaimContentionIntegrationTest.php",
+    "tests/Integration/Automation/IdempotencyRecoveryIntegrationTest.php",
+    "tests/Integration/BusinessRecord/BusinessNumberSequenceContentionIntegrationTest.php",
+    "tests/Integration/BusinessRecord/BusinessNumberSequenceIdentityIntegrationTest.php",
+    "tests/Integration/BusinessRecord/BusinessRecordClientReferenceIntegrationTest.php",
+    "tests/Integration/BusinessRecord/CorrectionAfterPeriodCloseIntegrationTest.php",
+    "tests/Integration/BusinessRecord/FiscalPeriodSequenceIntegrationTest.php",
+    "tests/Integration/BusinessRecord/PostingPeriodLockIntegrationTest.php",
+    "tests/Integration/Delivery/Http/Api/Idempotency/SecretOnceIdempotencyMiddlewareTest.php",
+    "tests/Integration/Demo/Infrastructure/DemoBusinessProfileExporterTest.php",
+    "tests/Support/NeutralBusinessFixture.php",
+    "tests/Unit/Application/Automation/PurgeIdempotencyRecordsHandlerTest.php",
+    "tests/Unit/BusinessRecord/Application/BusinessRecordRelationshipCoordinatorTest.php",
+    "tests/Unit/BusinessRecord/Application/WriteDocumentCommandTest.php",
+    "tests/Unit/BusinessSurface/Application/Custom/CustomBusinessActionExecutorTest.php",
+    "tests/Unit/BusinessSurface/Application/Custom/CustomBusinessHandlerRegistryTest.php",
+    "tests/Unit/Delivery/Http/Api/ApiPreconditionMiddlewareTest.php",
+    "tests/Unit/Delivery/Http/Api/Business/BusinessOperationStatusApiHandlerTest.php",
+    "tests/Unit/Delivery/Http/Api/Business/BusinessRecordApiHandlerTest.php",
+    "tests/Unit/Delivery/Http/Api/Business/BusinessRecordApiRequestTest.php",
+    "tests/Unit/Delivery/Http/Api/Idempotency/PersistentIdempotencyAuthorizationTest.php",
+    "tests/Unit/Delivery/Http/Api/Idempotency/PersistentIdempotencyMiddlewareTest.php",
+    "tests/Unit/Delivery/Http/Api/Plan/PlanPreviewHandlerTest.php"
+  ],
+  "notes": [
+    "Inventory is an extraction-baseline record, not a claim about the current App head. Recompute current import, fixture, reflection and configuration closure before adoption.",
+    "Consumers with an empty imports list are same-namespace or lexical references requiring review; do not mechanically replace API string identifiers.",
+    "SDK key references require the released SDK canonical-package successor in the coordinated adoption train. No aliases or mixed key types.",
+    "All host tests retain their behavior assertions; replace only references to extracted package-owned values."
+  ]
+}
