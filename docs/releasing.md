@@ -1,8 +1,7 @@
 # Releasing
 
 The full package tests and clean consumer checks run on pull requests and the
-actual default-branch event commit. Normal publication uses the release helpers
-from Business Definition main 2cbb7f0430b4a950c129064b380ecf2378cc6662.
+actual default-branch event commit. Normal publication uses the maintained release helpers in this repository.
 
 A recorded version requires exact stable Kumwe dependencies, whose published tags
 must match Composer's source and dist commits. Branch protection, GitHub's optional
@@ -17,7 +16,7 @@ attestation until independently provided; `composer dependency-readiness` reject
 stale or floating coordinates. An optional stricter attestation check is available
 through `tools/check-release-dependencies.sh`; it is not an assertion that independent
 verification has already passed. Passing source CI is distinct from verification of
-the published Idempotency successor.
+the selected published Idempotency release.
 
 An Unreleased-only changelog skips publication-specific dependency checks after
 the full package gate passes. Existing tags and releases are never replaced.

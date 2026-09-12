@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Standardize linked version, CI, PHP and license badges with current Core integration documentation.
+- Replace obsolete process documents with a maintained release record and Core contract; preserve source and tests.
+- Validate the new record schema and reject obsolete process fields while preserving all manifest ownership checks.
+- Resolve the unchanged exact Canonical JSON dependency through Packagist without a VCS repository override.
+
 ## 0.1.2
 
 - Correct capability, service and full migration-handoff metadata to the authoritative version 2 schemas.
@@ -19,4 +26,4 @@
 - Require the explicit generic-v1 CanonicalEncoder port; no encoder fallback.
 - Add package behavior and hostile-input tests, API drift checks and archive consumer verification.
 
-Version 0.1.0 was published from 26ec2ac31c493a088dd2bd01983b7428692bd1ea. Version 0.1.1 was published from f3e8e213ec00b56b4b1d1acbd8d82388ce85f8e1. The 0.1.2 heading is a proposed corrective successor; immutable publication and independent verification remain separate steps.
+Version 0.1.0 was published from 26ec2ac31c493a088dd2bd01983b7428692bd1ea. Version 0.1.1 was published from f3e8e213ec00b56b4b1d1acbd8d82388ce85f8e1.

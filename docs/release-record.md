@@ -1,9 +1,8 @@
 ---
-schema: kumwe-migration-handoff/v2
+schema: kumwe-package-release-record/v1
 artifact_kind: framework_php
 migration_id: KUMWE-MIG-2026-020
 change_set: KUMWE-CS-2026-020
-state: draft_pr_open
 source:
   app:
     repository: https://github.com/kumwe/app
@@ -28,13 +27,10 @@ source:
       sha256: 84d21b12e7a2bfd752356d9a6e664bcb332e209d19017e7634e7485a4fa4e250
   examined_dependencies:
     - kumwe/canonical-json
-  active_related_pull_requests: []
 target:
   repository: https://github.com/kumwe/idempotency
   artifact_identity: kumwe/idempotency
   canonical_namespace_or_abi: Kumwe\Idempotency\
-  branch: agent/canonical-governance-v2
-  pull_request: https://github.com/kumwe/idempotency/pull/5
 ownership:
   responsibility: Immutable replay identities, request fingerprints, captured results, state transitions and
     durable ledger ports.
@@ -298,8 +294,7 @@ documentation:
     - examples/typed-consumer.php
   changelog_record: CHANGELOG.md / 0.1.2
 release_expectations:
-  version_policy: Proposed 0.1.2 corrects governed metadata and documentation only; runtime and exact published
-    canonical-json 0.1.1 remain unchanged. Independently verify the immutable successor before adoption.
+  version_policy: SemVer; exact pre-1.0 pins and independent source/archive verification for consumers.
   expected_artifact_types:
     - Composer ZIP
   required_checks:
@@ -310,16 +305,13 @@ release_expectations:
     - Independent external release verification before consumer adoption
   required_registry_or_installer: Composer
   required_external_attestation: true
-next_task:
-  phase_name: Review and publish corrected package metadata, independently verify the exact archive, then
-    separately adopt in App
+consumer_contract:
   permitted_only_when:
     - All exact-source package and archive gates pass
-    - Human review and merge, immutable publication and independent successor/dependency verification before
-      App adoption
+    - Selected published release and exact dependencies pass independent verification before Core adoption
   consumer_repository: https://github.com/kumwe/app
   dependency_or_native_change: Retain exact canonical-json 0.1.1; verify its external attestation and the
-    Idempotency successor before consumer adoption
+    selected Idempotency release before consumer adoption
   namespace_or_api_replacements:
     - Kumwe\App\Delivery\Http\Api\Idempotency\IdempotencyKey -> Kumwe\Idempotency\IdempotencyKey
     - Kumwe\App\Application\Idempotency\IdempotencyLedger -> Kumwe\Idempotency\IdempotencyLedger
@@ -407,57 +399,54 @@ next_task:
     - composer check
     - composer autoload:smoke
     - composer examples
-concurrency:
-  likely_conflict_files:
-    - App composer.json and composer.lock
-    - Host DI bindings
-  related_migrations: []
-  ownership_conflicts: []
-  integration_train: null
-  resolution_rule: semantic-preservation
 governance:
-  roadmap_source_sha256: a202155ef1a65f5ab293d4f8397ebf4ac430db7f1e877c776bbe7851e6fe18d8
-  roadmap_refs: []
-  non_roadmap_refs: []
   completion_claim: false
 decisions:
   - CanonicalEncoder is required and never defaulted.
-  - Runtime source and App integration remain unchanged by this corrective metadata successor.
   - Locked full-schema development tools are excluded from Composer production archives.
   - No final-head or archive digest is embedded self-referentially; independent verification records actual
     release evidence.
-blockers:
-  - Independent external dependency and successor release attestations remain required.
+blockers: []
 ---
 
-## Migration/implementation summary
+# Idempotency release record
 
-The portable source and sequential conformance suites were published in 0.1.1 at f3e8e213ec00b56b4b1d1acbd8d82388ce85f8e1. This proposed 0.1.2 successor corrects canonical manifests and the complete v2 handoff, and makes the authoritative schemas mandatory in the package gate. Runtime source and App integration are unchanged.
+## Package contract
+
+Seven public types provide replay identities, request fingerprints, captured results, transitions and durable ports.
 
 ## Public API and responsibility
 
-[Public API](docs/public-api.md) is generated from the complete canonical reflection inventory and source PHPDoc, including enum cases, methods and properties. [Architecture](docs/architecture.md) and [integration](docs/integration.md) define bounds, exceptions and host authority. The governance gate verifies every exported symbol has exactly one capability owner and that source, documentation, handoff and metadata agree.
+[Public API](public-api.md) is generated from complete reflection and PHPDoc, including enum cases and members.
+[Core contract](core-contract.md) and [integration](integration.md) retain authority and concurrency boundaries.
 
-## Capability reuse/semantic input review
+## Dependencies and semantic inputs
 
-The explicit generic-v1 canonical port is reused; no executor or vendor algorithm is copied. The exact runtime dependency is canonical-json 0.1.1 at e7006a2580a49a1c8ab507b0d7b9c3403b4f9f58; its corpus digest is recorded above. Publication is observed. Independent external release verification remains required before consumer adoption.
+Runtime uses exact Canonical JSON 0.1.1 and an explicitly supplied generic-v1 CanonicalEncoder. Its source/corpus
+identity above is part of persisted fingerprint compatibility. No alternate canonical profile is selected.
 
-## Consumer inventory
+## Consumer contract
 
-[The baseline inventory](docs/consumer-inventory.json) records all seven extracted source-file digests, App/SDK imports, lexical review candidates, two implementation-owned tests to remove only after verified adoption, and host tests to retain. Paths are relative to the App repository root. Before Phase 2 recompute imports, calls, reflection, configuration and fixtures against the actual current consumer commit; the baseline inventory is not a claim about that future head.
+[Consumer inventory](consumer-inventory.json) records source digests, imports and test ownership at the explicit
+baseline. Reconcile current Core/SDK imports, reflection, configuration and fixtures before consumer changes.
 
 ## Test ownership
 
-The three ports have reusable sequential conformance in `tests/Conformance/LedgerContract.php`, executed by `tests/LedgerConformanceTest.php` with test-only adapters. `composer ownership` enforces the complete source/test inventory. [Test ownership](docs/test-ownership.md) retains database concurrency, transaction rollback, authorization and adapter integration in the host. Governance refusal fixtures independently reject the schema defects found in 0.1.1 and stale or incomplete cross-file ownership.
+The three ports have reusable sequential conformance in `tests/Conformance/LedgerContract.php`. Package ownership
+checks retain complete source/test mapping. [Test ownership](test-ownership.md) keeps database concurrency,
+transaction rollback, authorization and actual adapter integration in Core.
 
-## Next-task execution notes
+## Consumer verification
 
-Review [PR #5](https://github.com/kumwe/idempotency/pull/5). After exact-source source/archive gates pass, human review and merge permit normal immutable release automation. Independently verify the actual successor and its exact dependencies before any App namespace migration or class deletion. The optional strict dependency evidence helper is an adoption check, not an invented publication prerequisite.
+Verify the exact published release and dependency source/archives independently. A local archive consumer proves
+composition; it does not establish durable concurrency, publication provenance or Core integration.
 
-## Drift check
+## Compatibility and drift
 
-Compare the current App and SDK sources with the recorded baseline before adoption. `composer api` verifies the canonical reflection inventory, `composer governance` validates all four full authoritative schemas and ownership/digest relationships, and source-generated documentation refuses drift. Reusable semantic changes belong upstream; no host shadow implementation is introduced.
+Reconcile current Core/SDK source with the recorded baseline before import changes or duplicate test removal.
+Fingerprint profiles require explicit versioned migration when changed; persisted encoder objects are unsupported.
 
-## Validation recipe and observed local results
+## Validation
 
-The published 0.1.1 baseline passed 40 tests / 154 assertions and full hosted source/archive checks. The proposed 0.1.2 must independently pass `composer governance:install`, `composer check`, `composer autoload:smoke`, `composer examples` and release automation tests. Final tested source/tree, archive identity and release verification results are external evidence, not self-referential claims in this file. No App acceptance or adoption result is claimed.
+Run `composer governance:install`, `composer check`, `composer autoload:smoke`, `composer examples` and release
+automation regressions. Actual source/archive/publication observations belong in external evidence.
