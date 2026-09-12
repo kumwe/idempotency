@@ -3,9 +3,9 @@
 /**
  * Prove an extracted Composer archive ships exactly the consumer surface and nothing from the development lane.
  *
- * The expected set is derived from the checkout the archive was built from: the six root records, and every
+ * The expected set is derived from the checkout the archive was built from: the five root records, and every
  * file under docs/, examples/, resources/ and src/. Anything else in the archive is a leak and anything
- * missing is a broken consumer. The archive must carry MIGRATION-HANDOFF.md because the App adoption gate
+ * missing is a broken consumer. The archive must carry docs/release-record.md because the Core consumer gate
  * reads it from the release, and every src/ file must be an exported symbol of the shipped public API manifest.
  *
  * @since  0.1.0
@@ -64,7 +64,7 @@ function contextArchiveFiles(string $base, array &$failures, string $prefix = ''
 
 $failures = [];
 $expected = [];
-foreach (['CHANGELOG.md', 'CHARTER.md', 'LICENSE', 'MIGRATION-HANDOFF.md', 'README.md', 'composer.json'] as $file) {
+foreach (['CHANGELOG.md', 'CHARTER.md', 'LICENSE', 'README.md', 'composer.json'] as $file) {
     if (!is_file($root . '/' . $file)) {
         $failures[] = "The checkout lacks {$file}, which every release must ship.";
     }

@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://kumwe.dev/schemas/migration-handoff.v2",
-  "title": "Kumwe migration handoff front matter",
-  "description": "Front matter of MIGRATION-HANDOFF.md (Kumwe-v2-08); only the artifact_kind block is populated.",
+  "$id": "https://kumwe.dev/schemas/package-release-record.v1",
+  "title": "Kumwe package release contract record",
+  "description": "Production package contract and qualification requirements. Publication observations belong in independent release attestations.",
   "type": "object",
   "properties": {
     "schema": {
-      "const": "kumwe-migration-handoff/v2"
+      "const": "kumwe-package-release-record/v1"
     },
     "artifact_kind": {
       "$ref": "#/$defs/artifact_kind"
@@ -16,12 +16,6 @@
     },
     "change_set": {
       "$ref": "#/$defs/change_set_id"
-    },
-    "state": {
-      "type": "string",
-      "enum": [
-        "draft_pr_open"
-      ]
     },
     "source": {
       "type": "object",
@@ -109,19 +103,12 @@
           "items": {
             "type": "string"
           }
-        },
-        "active_related_pull_requests": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       },
       "required": [
         "app",
         "semantic_inputs",
-        "examined_dependencies",
-        "active_related_pull_requests"
+        "examined_dependencies"
       ],
       "additionalProperties": false
     },
@@ -138,21 +125,12 @@
         "canonical_namespace_or_abi": {
           "type": "string",
           "minLength": 1
-        },
-        "branch": {
-          "type": "string",
-          "minLength": 1
-        },
-        "pull_request": {
-          "$ref": "#/$defs/url"
         }
       },
       "required": [
         "repository",
         "artifact_identity",
-        "canonical_namespace_or_abi",
-        "branch",
-        "pull_request"
+        "canonical_namespace_or_abi"
       ],
       "additionalProperties": false
     },
@@ -358,13 +336,33 @@
       ],
       "additionalProperties": false
     },
-    "next_task": {
+    "governance": {
       "type": "object",
       "properties": {
-        "phase_name": {
-          "type": "string",
-          "minLength": 1
-        },
+        "completion_claim": {
+          "const": false
+        }
+      },
+      "required": [
+        "completion_claim"
+      ],
+      "additionalProperties": false
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "consumer_contract": {
+      "type": "object",
+      "properties": {
         "permitted_only_when": {
           "type": "array",
           "items": {
@@ -435,7 +433,6 @@
         }
       },
       "required": [
-        "phase_name",
         "permitted_only_when",
         "consumer_repository",
         "dependency_or_native_change",
@@ -450,95 +447,6 @@
         "verification_commands"
       ],
       "additionalProperties": false
-    },
-    "concurrency": {
-      "type": "object",
-      "properties": {
-        "likely_conflict_files": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "related_migrations": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/migration_id"
-          }
-        },
-        "ownership_conflicts": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "integration_train": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/train_id"
-            }
-          ]
-        },
-        "resolution_rule": {
-          "type": "string",
-          "enum": [
-            "semantic-preservation"
-          ]
-        }
-      },
-      "required": [
-        "likely_conflict_files",
-        "related_migrations",
-        "ownership_conflicts",
-        "integration_train",
-        "resolution_rule"
-      ],
-      "additionalProperties": false
-    },
-    "governance": {
-      "type": "object",
-      "properties": {
-        "roadmap_source_sha256": {
-          "$ref": "#/$defs/sha256"
-        },
-        "roadmap_refs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/roadmap_ref"
-          }
-        },
-        "non_roadmap_refs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/nrm_id"
-          }
-        },
-        "completion_claim": {
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "roadmap_source_sha256",
-        "roadmap_refs",
-        "non_roadmap_refs",
-        "completion_claim"
-      ],
-      "additionalProperties": false
-    },
-    "decisions": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "blockers": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
     }
   },
   "required": [
@@ -546,7 +454,6 @@
     "artifact_kind",
     "migration_id",
     "change_set",
-    "state",
     "source",
     "target",
     "ownership",
@@ -556,8 +463,7 @@
     "tests",
     "documentation",
     "release_expectations",
-    "next_task",
-    "concurrency",
+    "consumer_contract",
     "governance",
     "decisions",
     "blockers"
