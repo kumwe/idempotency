@@ -20,7 +20,7 @@ under `Kumwe\Idempotency`. Requires PHP 8.5, JSON and exact Canonical JSON 0.1.1
 Install the published package with an exact pre-1.0 pin:
 
 ```sh
-composer require kumwe/idempotency:0.1.2
+composer require kumwe/idempotency:0.1.3
 ```
 
 ```php
