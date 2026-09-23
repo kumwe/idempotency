@@ -1,11 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.1.3
 
+- Serialize the release record in the Core StrictYaml subset so a consumer's governance gate can read it; the 0.1.2 archive's folded scalar was refused by the Kumwe App validator during independent release verification.
 - Standardize linked version, CI, PHP and license badges with current Core integration documentation.
 - Replace obsolete process documents with a maintained release record and Core contract; preserve source and tests.
 - Validate the new record schema and reject obsolete process fields while preserving all manifest ownership checks.
 - Resolve the unchanged exact Canonical JSON dependency through Packagist without a VCS repository override.
+- Runtime source, public API, test ownership and dependency pins are unchanged.
 
 ## 0.1.2
 
