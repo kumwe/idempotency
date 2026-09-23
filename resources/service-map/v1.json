@@ -1,7 +1,7 @@
 {
     "schema": "kumwe-package-service-map/v1",
     "package": "kumwe/idempotency",
-    "release": "0.1.2",
+    "release": "0.1.3",
     "config_provider": null,
     "provider_absence_reason": "Immutable values and stateless helpers use direct construction; host adapters implement the ledger ports and supply CanonicalEncoder explicitly.",
     "factories": [],
