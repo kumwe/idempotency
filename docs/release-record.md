@@ -45,11 +45,11 @@ ownership:
   next_consumer: "kumwe/app"
   public_manifests:
     - path: "resources/capabilities/v1.json"
-      sha256: "1239150786e1ac847d0229b0dc56b3092fc92961aa77d342ec23a3943e54b981"
+      sha256: "4aba0ad34309591469d9421b60355a729a3a5b2ef892253634b695288d5f09f2"
     - path: "resources/service-map/v1.json"
-      sha256: "1243b15876b134c88b20990836e4ff60d7b7d32aa3155f41f7f3ec2e7b70846d"
+      sha256: "f545183e4ec69bf23f3ed7570c59689e0af077044ef09c4280400c95e56335a6"
     - path: "resources/public-api/v1.json"
-      sha256: "eb2b62d538984de8b0caa603b2dc8a2c82a30c8848686c9683182b620ef92104"
+      sha256: "fdf88a404e3e120fcb230641f45a3203c2984365a229fb554a1ff1e1cc593ab8"
   intentionally_excluded:
     - "App infrastructure, middleware, operational scheduling and consumer integration tests"
 framework_php:
@@ -285,7 +285,7 @@ documentation:
   integration_or_consumer: "docs/integration.md"
   examples:
     - "examples/typed-consumer.php"
-  changelog_record: "CHANGELOG.md / 0.1.2"
+  changelog_record: "CHANGELOG.md / 0.1.3"
 release_expectations:
   version_policy: "SemVer; exact pre-1.0 pins and independent source/archive verification for consumers."
   expected_artifact_types:
